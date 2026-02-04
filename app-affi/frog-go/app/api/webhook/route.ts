@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 // Initialize Stripe with the Secret Key
 // NOTE: process.env.STRIPE_SECRET_KEY must be set in .env.local
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-    apiVersion: "2024-12-18.acacia", // Uses latest stable API version
+    apiVersion: "2025-12-15.clover", // Updated to match installed package version
 });
 
 // Initialize Supabase Admin Client (Service Role) to bypass RLS
@@ -75,3 +75,4 @@ export async function POST(req: Request) {
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
+
