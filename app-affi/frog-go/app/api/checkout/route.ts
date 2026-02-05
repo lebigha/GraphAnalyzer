@@ -17,14 +17,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // If Stripe is not configured, simulate success for development
+        // Stripe must be configured in production
         if (!stripe) {
-            console.log("[CHECKOUT] Stripe not configured, simulating success");
-            // In dev mode, just redirect to success page
-            const successUrl = new URL("/success", request.url);
-            successUrl.searchParams.set("session_id", "dev_" + Date.now());
-            successUrl.searchParams.set("email", email);
-            return NextResponse.json({ url: successUrl.toString() });
+            console.error("[CHECKOUT] Stripe not configured");
+            return NextResponse.json(
+                { error: "Payment service unavailable. Please try again later." },
+                { status: 503 }
+            );
         }
 
         // Create Stripe Checkout session

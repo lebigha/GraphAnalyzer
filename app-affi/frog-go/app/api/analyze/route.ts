@@ -120,13 +120,27 @@ IMPORTANT: Essaie TOUJOURS d'analyser le graphique si tu vois des chandeliers ou
 // ROUTE API - POST
 // ============================================================================
 
+// Maximum image size: 5MB in base64 (base64 is ~33% larger than binary)
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024 * 1.33; // ~6.65MB in base64
+
 export async function POST(request: NextRequest) {
     try {
         console.log("[ANALYZE] Requête reçue");
 
-        // Extraction de l'image de la requête
-        const { image } = await request.json();
+        // Parse request body with size check
+        let body;
+        try {
+            body = await request.json();
+        } catch {
+            return NextResponse.json(
+                { isValid: false, reason: "Format de requête invalide." },
+                { status: 400 }
+            );
+        }
 
+        const { image } = body;
+
+        // Validate image presence
         if (!image) {
             console.error("[ANALYZE] Aucune image fournie");
             return NextResponse.json(
@@ -135,7 +149,33 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log("[ANALYZE] Image parsée, taille:", image?.length);
+        // Validate image is a string
+        if (typeof image !== "string") {
+            return NextResponse.json(
+                { isValid: false, reason: "Format d'image invalide." },
+                { status: 400 }
+            );
+        }
+
+        // Validate base64 format (data:image/xxx;base64,...)
+        const base64Regex = /^data:image\/(png|jpeg|jpg|gif|webp);base64,/;
+        if (!base64Regex.test(image)) {
+            return NextResponse.json(
+                { isValid: false, reason: "Format d'image non supporté. Utilisez PNG, JPEG, GIF ou WebP." },
+                { status: 400 }
+            );
+        }
+
+        // Validate image size (max 5MB)
+        if (image.length > MAX_IMAGE_SIZE_BYTES) {
+            console.warn("[ANALYZE] Image trop grande:", image.length);
+            return NextResponse.json(
+                { isValid: false, reason: "Image trop volumineuse. Maximum 5MB autorisé." },
+                { status: 413 }
+            );
+        }
+
+        console.log("[ANALYZE] Image validée, taille:", image.length);
 
         // Vérification que le client Groq est initialisé
         if (!groq) {
