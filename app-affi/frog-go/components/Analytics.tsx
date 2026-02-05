@@ -1,13 +1,40 @@
 "use client";
 
 import Script from "next/script";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function Analytics() {
     const fbPixelId = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
     const tiktokPixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
+    const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
     return (
         <>
+            {/* Vercel Analytics (automatic, no config needed) */}
+            <VercelAnalytics />
+
+            {/* Vercel Speed Insights */}
+            <SpeedInsights />
+
+            {/* Google Analytics 4 */}
+            {gaId && (
+                <>
+                    <Script
+                        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+                        strategy="afterInteractive"
+                    />
+                    <Script id="google-analytics" strategy="afterInteractive">
+                        {`
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag(){dataLayer.push(arguments);}
+                            gtag('js', new Date());
+                            gtag('config', '${gaId}');
+                        `}
+                    </Script>
+                </>
+            )}
+
             {/* Facebook Pixel */}
             {fbPixelId && (
                 <Script id="fb-pixel" strategy="afterInteractive">
@@ -42,3 +69,4 @@ export default function Analytics() {
         </>
     );
 }
+

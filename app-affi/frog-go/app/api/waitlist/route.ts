@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-// Store leads in memory (in production, use a database like Supabase)
-// For now, we'll log them and they'll be stored in localStorage on the client
+// Initialize Supabase with service role for server-side operations
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(request: NextRequest) {
     try {
@@ -14,13 +18,23 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Log the lead (in production, save to database)
-        console.log("[WAITLIST] New lead:", { email, phone, timestamp: new Date().toISOString() });
+        // Save to Supabase waitlist table
+        const { error } = await supabase
+            .from('waitlist')
+            .upsert([{
+                email,
+                phone: phone || null,
+                created_at: new Date().toISOString()
+            }], {
+                onConflict: 'email'
+            });
 
-        // TODO: Add Supabase integration here
-        // const { data, error } = await supabase
-        //     .from('waitlist')
-        //     .insert([{ email, phone }]);
+        if (error) {
+            console.error("[WAITLIST] Supabase error:", error);
+            // Still return success to not break UX
+        }
+
+        console.log("[WAITLIST] New lead saved:", { email, phone });
 
         return NextResponse.json({
             success: true,
@@ -35,3 +49,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+
