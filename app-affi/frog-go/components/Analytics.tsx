@@ -6,7 +6,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function Analytics() {
     const fbPixelId = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
-    const tiktokPixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
+    // Hardcode TikTok Pixel ID as fallback (env var not propagating on Vercel)
+    const tiktokPixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || "D62EH2BC77U8OPSUBQNG";
     const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
     return (
