@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import ImageUpload from "@/components/ImageUpload";
 import ChartAnalysis from "@/components/ChartAnalysis";
 import HistoryDrawer from "@/components/HistoryDrawer";
 import PaywallModal from "@/components/PaywallModal";
 import AuthModal from "@/components/AuthModal";
-import { checkUsageLimit, incrementUsage, getRemainingAnalyses, isPremium, getMaxFreeAnalyses } from "@/lib/usage";
+import { checkUsageLimit, incrementUsage, getRemainingAnalyses, isPremium, getMaxFreeAnalyses, setPremium } from "@/lib/usage";
 import { saveAnalysis, getHistoryCount, AnalysisHistoryItem } from "@/lib/history";
 import { useAuth } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -27,13 +28,21 @@ export default function AnalyzePage() {
 
     // Use auth hook
     const { user } = useAuth();
+    const searchParams = useSearchParams();
 
     // Wait for client mount before reading localStorage
     useEffect(() => {
         setMounted(true);
         setHistoryCount(getHistoryCount());
+
+        // Secret beta access: ?beta=frog2026 activates premium
+        const betaCode = searchParams.get("beta");
+        if (betaCode === "frog2026") {
+            setPremium();
+        }
+
         setHasPremium(isPremium());
-    }, []);
+    }, [searchParams]);
 
     const handleImageUpload = async (imageData: string) => {
         setError(null);
