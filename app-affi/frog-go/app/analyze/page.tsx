@@ -233,8 +233,8 @@ export default function AnalyzePage() {
                 onClose={() => setShowAuth(false)}
                 onSuccess={() => {
                     setShowAuth(false);
-                    // After login, show paywall if no premium
-                    if (!isPremium()) {
+                    // After login, only show paywall if no free scans left and not premium
+                    if (!isPremium() && !checkUsageLimit()) {
                         setShowPaywall(true);
                     }
                 }}
