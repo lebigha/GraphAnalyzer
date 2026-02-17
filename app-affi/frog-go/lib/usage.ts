@@ -11,7 +11,7 @@ const STORAGE_KEY = "frog_ai_usage";
 const PREMIUM_KEY = "frog_premium";
 
 // Nombre maximum d'analyses gratuites avant paywall
-const MAX_FREE_ANALYSES = 3;
+const MAX_FREE_ANALYSES = 999;
 
 // ============================================================================
 // PREMIUM STATUS
