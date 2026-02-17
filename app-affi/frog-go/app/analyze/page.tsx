@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import ImageUpload from "@/components/ImageUpload";
 import ChartAnalysis from "@/components/ChartAnalysis";
@@ -28,7 +27,6 @@ export default function AnalyzePage() {
 
     // Use auth hook
     const { user } = useAuth();
-    const searchParams = useSearchParams();
 
     // Wait for client mount before reading localStorage
     useEffect(() => {
@@ -36,13 +34,13 @@ export default function AnalyzePage() {
         setHistoryCount(getHistoryCount());
 
         // Secret beta access: ?beta=frog2026 activates premium
-        const betaCode = searchParams.get("beta");
-        if (betaCode === "frog2026") {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("beta") === "frog2026") {
             setPremium();
         }
 
         setHasPremium(isPremium());
-    }, [searchParams]);
+    }, []);
 
     const handleImageUpload = async (imageData: string) => {
         setError(null);
