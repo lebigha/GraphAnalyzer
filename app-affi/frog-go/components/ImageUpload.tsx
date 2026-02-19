@@ -13,7 +13,7 @@ interface ImageUploadProps {
 
 export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps) {
     const [isMobile, setIsMobile] = useState(false);
-    const [showPasteHint, setShowPasteHint] = useState(false);
+    const [pasteToast, setPasteToast] = useState<string | null>(null);
     const { t } = useTranslation();
 
     const features = [
@@ -87,32 +87,97 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
         }
     }, [onUpload, compressImage]);
 
-    // Handle Ctrl+V paste from clipboard
+    // Show a brief toast message
+    const showToast = useCallback((msg: string) => {
+        setPasteToast(msg);
+        setTimeout(() => setPasteToast(null), 2500);
+    }, []);
+
+    // Core paste logic: try to extract image from clipboard items
+    const handleClipboardItems = useCallback(async (items: DataTransferItemList | ClipboardItems): Promise<boolean> => {
+        // Handle DataTransferItemList (from paste event)
+        if ('length' in items && items.length > 0 && 'getAsFile' in (items[0] as DataTransferItem)) {
+            for (const item of Array.from(items as DataTransferItemList)) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    if (file) {
+                        processFile(file);
+                        return true;
+                    }
+                }
+            }
+        }
+        // Handle ClipboardItems (from navigator.clipboard.read())
+        if (Array.isArray(items) || (Symbol.iterator in Object(items))) {
+            for (const item of items as ClipboardItems) {
+                const clipboardItem = item as ClipboardItem;
+                if (clipboardItem.types) {
+                    for (const type of clipboardItem.types) {
+                        if (type.startsWith('image/')) {
+                            const blob = await clipboardItem.getType(type);
+                            const file = new File([blob], 'pasted-image.png', { type });
+                            processFile(file);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }, [processFile]);
+
+    // Dedicated paste function (called by button click)
+    const handlePasteClick = useCallback(async () => {
+        if (isAnalyzing) return;
+        try {
+            if (!navigator.clipboard?.read) {
+                showToast('❌ ' + (t.upload.pasteNotSupported || 'Clipboard not supported in this browser'));
+                return;
+            }
+            const items = await navigator.clipboard.read();
+            const found = await handleClipboardItems(items);
+            if (!found) {
+                showToast('❌ ' + (t.upload.pasteNoImage || 'No image in clipboard'));
+            }
+        } catch (err: any) {
+            console.error('[Paste] Clipboard read failed:', err);
+            if (err?.name === 'NotAllowedError') {
+                showToast('❌ ' + (t.upload.pastePermission || 'Allow clipboard access in your browser'));
+            } else {
+                showToast('❌ ' + (t.upload.pasteNoImage || 'No image in clipboard'));
+            }
+        }
+    }, [isAnalyzing, handleClipboardItems, showToast, t.upload]);
+
+    // Handle Ctrl+V paste event
     useEffect(() => {
-        const handlePaste = (e: ClipboardEvent) => {
+        const handlePaste = async (e: ClipboardEvent) => {
             if (isAnalyzing) return;
 
             const items = e.clipboardData?.items;
-            if (!items) return;
+            if (!items || items.length === 0) return;
 
+            // Check if any item is an image
+            let hasImage = false;
             for (const item of Array.from(items)) {
                 if (item.type.startsWith('image/')) {
-                    e.preventDefault();
-                    const file = item.getAsFile();
-                    if (file) {
-                        // Brief visual feedback
-                        setShowPasteHint(true);
-                        setTimeout(() => setShowPasteHint(false), 1500);
-                        processFile(file);
-                    }
+                    hasImage = true;
                     break;
+                }
+            }
+
+            if (hasImage) {
+                e.preventDefault();
+                const found = await handleClipboardItems(items);
+                if (found) {
+                    showToast('✅ ' + (t.upload.pasteSuccess || 'Image pasted!'));
                 }
             }
         };
 
         window.addEventListener('paste', handlePaste);
         return () => window.removeEventListener('paste', handlePaste);
-    }, [isAnalyzing, processFile]);
+    }, [isAnalyzing, handleClipboardItems, showToast, t.upload]);
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
@@ -256,29 +321,46 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
                                             <p className="text-xs text-gray-600 font-mono">
                                                 PNG • JPG • WEBP
                                             </p>
+                                        </div>
+
+                                        <div className="flex flex-col sm:flex-row items-center gap-3">
+                                            <motion.button
+                                                className="relative overflow-hidden px-8 py-3 bg-frog-green text-black font-bold rounded-xl shadow-lg shadow-frog-green/25"
+                                                whileHover={{ scale: 1.03 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                <span className="relative z-10">
+                                                    {isMobile ? t.upload.takePhoto : t.upload.browseFiles}
+                                                </span>
+                                                <motion.div
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12"
+                                                    animate={{ x: ["-100%", "200%"] }}
+                                                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                                                />
+                                            </motion.button>
+
                                             {!isMobile && (
-                                                <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-                                                    <Clipboard className="w-3 h-3" />
-                                                    <span>{t.upload.pasteHint}</span>
-                                                </div>
+                                                <motion.button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handlePasteClick();
+                                                    }}
+                                                    className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-frog-green/30 text-gray-300 hover:text-white font-medium rounded-xl transition-all duration-200 flex items-center gap-2"
+                                                    whileHover={{ scale: 1.03 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                >
+                                                    <Clipboard className="w-4 h-4" />
+                                                    {t.upload.pasteButton}
+                                                </motion.button>
                                             )}
                                         </div>
 
-                                        <motion.button
-                                            className="relative overflow-hidden px-8 py-3 bg-frog-green text-black font-bold rounded-xl shadow-lg shadow-frog-green/25"
-                                            whileHover={{ scale: 1.03 }}
-                                            whileTap={{ scale: 0.98 }}
-                                        >
-                                            <span className="relative z-10">
-                                                {isMobile ? t.upload.takePhoto : t.upload.browseFiles}
-                                            </span>
-                                            {/* Shine effect */}
-                                            <motion.div
-                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12"
-                                                animate={{ x: ["-100%", "200%"] }}
-                                                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                                            />
-                                        </motion.button>
+                                        {!isMobile && (
+                                            <p className="text-xs text-gray-600 mt-1">
+                                                {t.upload.pasteHint}
+                                            </p>
+                                        )}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -316,6 +398,19 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
                     {t.upload.compatibleWith} <span className="text-gray-400">TradingView</span> • <span className="text-gray-400">MetaTrader</span> • <span className="text-gray-400">Binance</span> • <span className="text-gray-400">{t.upload.andMore}</span>
                 </p>
             </div>
+            {/* Paste Toast Notification */}
+            <AnimatePresence>
+                {pasteToast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-frog-dark/95 border border-white/10 rounded-xl shadow-2xl backdrop-blur-lg text-sm text-white font-medium"
+                    >
+                        {pasteToast}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
