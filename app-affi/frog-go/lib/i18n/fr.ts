@@ -198,7 +198,7 @@ const fr = {
         pasteHint: "Ctrl+V pour coller depuis le presse-papiers",
         pasteButton: "📋 Coller une image",
         pasteSuccess: "Image collée !",
-        pasteNoImage: "Aucune image dans le presse-papiers",
+        pasteNoImage: "Aucune image dans le presse-papiers. Essayez : faites un screenshot puis Ctrl+V",
         pasteNotSupported: "Presse-papiers non supporté dans ce navigateur",
         pastePermission: "Autorisez l'accès au presse-papiers dans votre navigateur",
         compatibleWith: "Compatible avec",

@@ -200,7 +200,7 @@ const en: Translations = {
         pasteHint: "Ctrl+V to paste from clipboard",
         pasteButton: "📋 Paste Image",
         pasteSuccess: "Image pasted!",
-        pasteNoImage: "No image in clipboard",
+        pasteNoImage: "No image in clipboard. Try: take a screenshot then Ctrl+V",
         pasteNotSupported: "Clipboard not supported in this browser",
         pastePermission: "Allow clipboard access in your browser",
         compatibleWith: "Compatible with",

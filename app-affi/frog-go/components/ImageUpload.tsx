@@ -93,91 +93,68 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
         setTimeout(() => setPasteToast(null), 2500);
     }, []);
 
-    // Core paste logic: try to extract image from clipboard items
-    const handleClipboardItems = useCallback(async (items: DataTransferItemList | ClipboardItems): Promise<boolean> => {
-        // Handle DataTransferItemList (from paste event)
-        if ('length' in items && items.length > 0 && 'getAsFile' in (items[0] as DataTransferItem)) {
-            for (const item of Array.from(items as DataTransferItemList)) {
-                if (item.type.startsWith('image/')) {
-                    const file = item.getAsFile();
-                    if (file) {
-                        processFile(file);
-                        return true;
-                    }
+    // Process image from clipboard paste event
+    const handlePasteEvent = useCallback((e: ClipboardEvent) => {
+        if (isAnalyzing) return;
+
+        const items = e.clipboardData?.items;
+        if (!items) return;
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (item.type.indexOf('image') !== -1) {
+                e.preventDefault();
+                const file = item.getAsFile();
+                if (file) {
+                    showToast('✅ ' + (t.upload.pasteSuccess || 'Image pasted!'));
+                    processFile(file);
                 }
+                return;
             }
         }
-        // Handle ClipboardItems (from navigator.clipboard.read())
-        if (Array.isArray(items) || (Symbol.iterator in Object(items))) {
-            for (const item of items as ClipboardItems) {
-                const clipboardItem = item as ClipboardItem;
-                if (clipboardItem.types) {
+    }, [isAnalyzing, processFile, showToast, t.upload]);
+
+    // Dedicated paste function (button click) — uses navigator.clipboard.read()
+    const handlePasteClick = useCallback(async () => {
+        if (isAnalyzing) return;
+
+        try {
+            // Try modern Clipboard API first
+            if (navigator.clipboard && typeof navigator.clipboard.read === 'function') {
+                const clipboardItems = await navigator.clipboard.read();
+                for (const clipboardItem of clipboardItems) {
                     for (const type of clipboardItem.types) {
                         if (type.startsWith('image/')) {
                             const blob = await clipboardItem.getType(type);
                             const file = new File([blob], 'pasted-image.png', { type });
+                            showToast('✅ ' + (t.upload.pasteSuccess || 'Image pasted!'));
                             processFile(file);
-                            return true;
+                            return;
                         }
                     }
                 }
-            }
-        }
-        return false;
-    }, [processFile]);
-
-    // Dedicated paste function (called by button click)
-    const handlePasteClick = useCallback(async () => {
-        if (isAnalyzing) return;
-        try {
-            if (!navigator.clipboard?.read) {
-                showToast('❌ ' + (t.upload.pasteNotSupported || 'Clipboard not supported in this browser'));
+                // No image found in clipboard
+                showToast('❌ ' + (t.upload.pasteNoImage || 'No image in clipboard. Try: screenshot then Ctrl+V'));
                 return;
             }
-            const items = await navigator.clipboard.read();
-            const found = await handleClipboardItems(items);
-            if (!found) {
-                showToast('❌ ' + (t.upload.pasteNoImage || 'No image in clipboard'));
-            }
+
+            // Fallback: prompt user to use Ctrl+V
+            showToast('💡 ' + (t.upload.pasteHint || 'Use Ctrl+V to paste'));
         } catch (err: any) {
-            console.error('[Paste] Clipboard read failed:', err);
+            console.warn('[Paste] Clipboard API error:', err?.message);
             if (err?.name === 'NotAllowedError') {
                 showToast('❌ ' + (t.upload.pastePermission || 'Allow clipboard access in your browser'));
             } else {
-                showToast('❌ ' + (t.upload.pasteNoImage || 'No image in clipboard'));
+                showToast('❌ ' + (t.upload.pasteNoImage || 'No image in clipboard. Try: screenshot then Ctrl+V'));
             }
         }
-    }, [isAnalyzing, handleClipboardItems, showToast, t.upload]);
+    }, [isAnalyzing, processFile, showToast, t.upload]);
 
-    // Handle Ctrl+V paste event
+    // Listen for Ctrl+V paste globally
     useEffect(() => {
-        const handlePaste = async (e: ClipboardEvent) => {
-            if (isAnalyzing) return;
-
-            const items = e.clipboardData?.items;
-            if (!items || items.length === 0) return;
-
-            // Check if any item is an image
-            let hasImage = false;
-            for (const item of Array.from(items)) {
-                if (item.type.startsWith('image/')) {
-                    hasImage = true;
-                    break;
-                }
-            }
-
-            if (hasImage) {
-                e.preventDefault();
-                const found = await handleClipboardItems(items);
-                if (found) {
-                    showToast('✅ ' + (t.upload.pasteSuccess || 'Image pasted!'));
-                }
-            }
-        };
-
-        window.addEventListener('paste', handlePaste);
-        return () => window.removeEventListener('paste', handlePaste);
-    }, [isAnalyzing, handleClipboardItems, showToast, t.upload]);
+        document.addEventListener('paste', handlePasteEvent as EventListener);
+        return () => document.removeEventListener('paste', handlePasteEvent as EventListener);
+    }, [handlePasteEvent]);
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
