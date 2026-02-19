@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, TrendingUp, ArrowRight, ExternalLink } from "lucide-react";
+import { X, Sparkles, ExternalLink, ChevronRight } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 interface UpsellModalProps {
     isOpen: boolean;
@@ -10,103 +11,87 @@ interface UpsellModalProps {
 }
 
 export default function UpsellModal({ isOpen, onClose }: UpsellModalProps) {
+    const { t } = useTranslation();
+
     return (
         <AnimatePresence>
             {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
-                >
+                <>
                     <motion.div
-                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="w-full max-w-lg bg-gradient-to-b from-[#0a0a0a] to-[#050505] border border-frog-green/30 rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,255,157,0.15)] relative"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+                        onClick={onClose}
+                    />
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md z-50"
                     >
-                        {/* Close button */}
-                        <button
-                            onClick={onClose}
-                            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors z-10"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                        <div className="glass-card p-6 md:p-8 border-frog-green/20 relative overflow-hidden">
+                            {/* Glow */}
+                            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-60 h-60 bg-frog-green/20 blur-[100px] pointer-events-none" />
 
-                        <div className="p-8 text-center">
-                            <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: "spring", delay: 0.2 }}
-                                className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6"
-                            >
-                                <Send className="w-10 h-10 text-blue-400 ml-1" />
-                            </motion.div>
-
-                            <h2 className="text-3xl font-black text-white mb-2">
-                                Attends ! Une dernière chose...
-                            </h2>
-                            <p className="text-gray-400 mb-8">
-                                Maximise tes profits en rejoignant notre communauté privée.
-                            </p>
-
-                            <div className="grid gap-4">
-                                {/* Telegram Upsell */}
-                                <a
-                                    href="https://t.me/ton_lien_telegram" // À REMPLACER
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group relative p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl hover:bg-blue-500/20 transition-all text-left"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <Send className="w-6 h-6 text-blue-400" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-white group-hover:text-blue-400 transition-colors">
-                                                Rejoindre le Groupe VIP
-                                            </h3>
-                                            <p className="text-sm text-gray-400">
-                                                Signaux quotidiens & entraide
-                                            </p>
-                                        </div>
-                                        <ArrowRight className="w-5 h-5 text-gray-500 group-hover:translate-x-1 transition-transform" />
-                                    </div>
-                                </a>
-
-                                {/* Broker Upsell */}
-                                <a
-                                    href="https://broker.com/ref" // À REMPLACER
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group relative p-4 bg-frog-green/10 border border-frog-green/20 rounded-xl hover:bg-frog-green/20 transition-all text-left"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-frog-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <TrendingUp className="w-6 h-6 text-frog-green" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-white group-hover:text-frog-green transition-colors">
-                                                Broker Recommandé
-                                            </h3>
-                                            <p className="text-sm text-gray-400">
-                                                Bonus de bienvenue jusqu'à $500
-                                            </p>
-                                        </div>
-                                        <ExternalLink className="w-5 h-5 text-gray-500 group-hover:text-frog-green transition-colors" />
-                                    </div>
-                                </a>
-                            </div>
-
-                            <button
-                                onClick={onClose}
-                                className="mt-8 text-sm text-gray-500 hover:text-white transition-colors"
-                            >
-                                Non merci, je veux juste accéder à l'app
+                            {/* Close */}
+                            <button onClick={onClose} className="absolute top-4 right-4 p-1 text-gray-500 hover:text-white transition-colors">
+                                <X className="w-5 h-5" />
                             </button>
+
+                            <div className="relative z-10">
+                                {/* Header */}
+                                <div className="mb-6 text-center">
+                                    <div className="w-16 h-16 rounded-full bg-frog-green/20 flex items-center justify-center mx-auto mb-4">
+                                        <Sparkles className="w-8 h-8 text-frog-green" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-2">{t.upsell.waitTitle}</h3>
+                                    <p className="text-gray-400 text-sm">{t.upsell.waitDesc}</p>
+                                </div>
+
+                                {/* Options */}
+                                <div className="space-y-3 mb-6">
+                                    {/* VIP Group */}
+                                    <a
+                                        href="https://t.me/frogai_vip"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-frog-green/10 to-frog-cyan/10 border border-frog-green/20 hover:border-frog-green/40 transition-all group"
+                                    >
+                                        <div>
+                                            <p className="font-bold text-white">{t.upsell.joinVip}</p>
+                                            <p className="text-xs text-gray-400">{t.upsell.dailySignals}</p>
+                                        </div>
+                                        <ExternalLink className="w-5 h-5 text-frog-green group-hover:translate-x-1 transition-transform" />
+                                    </a>
+
+                                    {/* Recommended Broker */}
+                                    <a
+                                        href="https://partner.bybit.com/frogai"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:border-frog-green/30 transition-all group"
+                                    >
+                                        <div>
+                                            <p className="font-bold text-white">{t.upsell.recommendedBroker}</p>
+                                            <p className="text-xs text-gray-400">{t.upsell.welcomeBonus}</p>
+                                        </div>
+                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-frog-green group-hover:translate-x-1 transition-all" />
+                                    </a>
+                                </div>
+
+                                {/* Skip */}
+                                <button
+                                    onClick={onClose}
+                                    className="w-full text-center text-sm text-gray-500 hover:text-gray-300 transition-colors py-2"
+                                >
+                                    {t.upsell.noThanks}
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
-                </motion.div>
+                </>
             )}
         </AnimatePresence>
     );

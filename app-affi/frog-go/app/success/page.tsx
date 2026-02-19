@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import Link from "next/link";
 import UpsellModal from "@/components/UpsellModal";
+import { useTranslation } from "@/lib/i18n";
 
 export default function SuccessPage() {
     return (
@@ -19,6 +20,7 @@ function SuccessContent() {
     const searchParams = useSearchParams();
     const [email, setEmail] = useState<string | null>(null);
     const [showUpsell, setShowUpsell] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         // Mark user as premium
@@ -69,7 +71,7 @@ function SuccessContent() {
                     transition={{ delay: 0.3 }}
                     className="text-4xl font-black text-white mb-4"
                 >
-                    Bienvenue dans la <span className="text-frog-green">famille</span> 🐸
+                    {t.success.welcomeTitle} <span className="text-frog-green">{t.success.welcomeHighlight}</span> 🐸
                 </motion.h1>
 
                 <motion.p
@@ -78,7 +80,7 @@ function SuccessContent() {
                     transition={{ delay: 0.4 }}
                     className="text-gray-400 text-lg mb-8"
                 >
-                    Ton accès Lifetime est maintenant actif !
+                    {t.success.lifetimeActive}
                 </motion.p>
 
                 {/* Benefits */}
@@ -90,20 +92,20 @@ function SuccessContent() {
                 >
                     <div className="flex items-center justify-center gap-2 mb-4">
                         <Sparkles className="w-5 h-5 text-frog-green" />
-                        <span className="font-bold text-white">Ce que tu as débloqué</span>
+                        <span className="font-bold text-white">{t.success.unlocked}</span>
                     </div>
                     <ul className="space-y-3 text-left">
                         <li className="flex items-center gap-3 text-gray-300">
                             <CheckCircle className="w-5 h-5 text-frog-green flex-shrink-0" />
-                            <span>Analyses illimitées à vie</span>
+                            <span>{t.success.feature1}</span>
                         </li>
                         <li className="flex items-center gap-3 text-gray-300">
                             <CheckCircle className="w-5 h-5 text-frog-green flex-shrink-0" />
-                            <span>Prédiction IA avancée</span>
+                            <span>{t.success.feature2}</span>
                         </li>
                         <li className="flex items-center gap-3 text-gray-300">
                             <CheckCircle className="w-5 h-5 text-frog-green flex-shrink-0" />
-                            <span>Tous les futurs updates</span>
+                            <span>{t.success.feature3}</span>
                         </li>
                     </ul>
                 </motion.div>
@@ -117,7 +119,7 @@ function SuccessContent() {
                     <Link href="/analyze">
                         <button className="group w-full py-4 bg-gradient-to-r from-frog-green to-frog-cyan text-black font-bold rounded-xl hover:shadow-[0_0_40px_rgba(0,255,157,0.4)] transition-all">
                             <span className="flex items-center justify-center gap-2">
-                                Commencer à analyser
+                                {t.success.startAnalyzing}
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </span>
                         </button>
@@ -131,7 +133,7 @@ function SuccessContent() {
                         transition={{ delay: 0.7 }}
                         className="mt-6 text-sm text-gray-500"
                     >
-                        Confirmation envoyée à {email}
+                        {t.success.confirmationSent} {email}
                     </motion.p>
                 )}
             </motion.div>
@@ -145,7 +147,7 @@ function SuccessLoading() {
         <main className="min-h-screen bg-[#050505] flex items-center justify-center p-4">
             <div className="text-center">
                 <Loader2 className="w-12 h-12 text-frog-green animate-spin mx-auto mb-4" />
-                <p className="text-gray-400">Chargement...</p>
+                <p className="text-gray-400">Loading...</p>
             </div>
         </main>
     );

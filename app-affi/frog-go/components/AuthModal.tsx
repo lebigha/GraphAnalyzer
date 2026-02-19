@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Lock, Phone, Loader2, Eye, EyeOff, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslation } from "@/lib/i18n";
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -21,6 +22,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const { t } = useTranslation();
 
     const supabase = createClient();
 
@@ -31,7 +33,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         setIsLoading(true);
 
         if (!supabase) {
-            setError("Service d'authentification non disponible");
+            setError(t.auth.authUnavailable);
             setIsLoading(false);
             return;
         }
@@ -39,7 +41,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         try {
             if (mode === "signup") {
                 if (password !== confirmPassword) {
-                    setError("Les mots de passe ne correspondent pas");
+                    setError(t.auth.passwordMismatch);
                     setIsLoading(false);
                     return;
                 }
@@ -57,7 +59,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 if (error) throw error;
 
                 if (data.user) {
-                    setSuccess("Compte créé ! Tu peux maintenant te connecter.");
+                    setSuccess(t.auth.accountCreated);
                     setTimeout(() => {
                         setMode("login");
                         setSuccess("");
@@ -70,7 +72,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
                 if (error) throw error;
 
-                setSuccess("Un email de réinitialisation a été envoyé !");
+                setSuccess(t.auth.resetSent);
                 setTimeout(() => {
                     setMode("login");
                     setSuccess("");
@@ -89,12 +91,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         } catch (err: any) {
             console.error("Auth error:", err);
             if (err.message.includes("Invalid login")) {
-                setError("Email ou mot de passe incorrect");
+                setError(t.auth.wrongCredentials);
             } else if (err.message.includes("already registered")) {
-                setError("Cet email est déjà utilisé. Connecte-toi !");
+                setError(t.auth.alreadyRegistered);
                 setMode("login");
             } else {
-                setError(err.message || "Une erreur est survenue");
+                setError(err.message || t.auth.genericError);
             }
         } finally {
             setIsLoading(false);
@@ -136,14 +138,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                                     transition={{ duration: 2, repeat: Infinity }}
                                 />
                                 <h2 className="text-2xl font-black text-white mb-1">
-                                    {mode === "signup" ? "Créer un compte" : mode === "forgot_password" ? "Réinitialisation" : "Connexion"}
+                                    {mode === "signup" ? t.auth.createAccount : mode === "forgot_password" ? t.auth.reset : t.auth.login}
                                 </h2>
                                 <p className="text-gray-400 text-sm">
                                     {mode === "signup"
-                                        ? "Rejoins les traders qui utilisent l'IA"
+                                        ? t.auth.signupSubtitle
                                         : mode === "forgot_password"
-                                            ? "Entre ton email pour recevoir un lien"
-                                            : "Content de te revoir !"}
+                                            ? t.auth.resetSubtitle
+                                            : t.auth.loginSubtitle}
                                 </p>
                             </div>
                         </div>
@@ -181,7 +183,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                                         type="tel"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
-                                        placeholder="Numéro de téléphone"
+                                        placeholder={t.auth.phonePlaceholder}
                                         className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-frog-green/50 transition-colors"
                                     />
                                 </div>
@@ -194,7 +196,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                                         type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Mot de passe"
+                                        placeholder={t.auth.passwordPlaceholder}
                                         className="w-full pl-12 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-frog-green/50 transition-colors"
                                         required
                                         minLength={6}
@@ -216,7 +218,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                                         type={showPassword ? "text" : "password"}
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        placeholder="Confirmer le mot de passe"
+                                        placeholder={t.auth.confirmPassword}
                                         className="w-full pl-12 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-frog-green/50 transition-colors"
                                         required
                                         minLength={6}
@@ -231,7 +233,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                                         onClick={() => setMode("forgot_password")}
                                         className="text-xs text-gray-400 hover:text-white transition-colors"
                                     >
-                                        Mot de passe oublié ?
+                                        {t.auth.forgotPassword}
                                     </button>
                                 </div>
                             )}
@@ -244,13 +246,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                                 {isLoading ? (
                                     <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                                 ) : (
-                                    mode === "signup" ? "Créer mon compte" : mode === "forgot_password" ? "Envoyer le lien" : "Se connecter"
+                                    mode === "signup" ? t.auth.createMyAccount : mode === "forgot_password" ? t.auth.sendLink : t.auth.signIn
                                 )}
                             </button>
 
                             <div className="text-center pt-4 border-t border-white/10">
                                 <p className="text-gray-400 text-sm">
-                                    {mode === "signup" ? "Déjà un compte ?" : mode === "forgot_password" ? "Retour à la " : "Pas encore de compte ?"}
+                                    {mode === "signup" ? t.auth.alreadyHaveAccount : mode === "forgot_password" ? t.auth.backTo : t.auth.noAccount}
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -260,7 +262,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                                         }}
                                         className="ml-2 text-frog-green font-semibold hover:underline"
                                     >
-                                        {mode === "signup" ? "Se connecter" : mode === "forgot_password" ? "Connexion" : "S'inscrire"}
+                                        {mode === "signup" ? t.auth.signIn : mode === "forgot_password" ? t.auth.login : t.auth.signUp}
                                     </button>
                                 </p>
                             </div>

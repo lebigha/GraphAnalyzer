@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Initialize Supabase with service role for server-side operations
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Lazy Supabase client to avoid build-time errors
+function getSupabase() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) throw new Error("Supabase not configured");
+    return createClient(url, key);
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -19,7 +21,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Save to Supabase waitlist table
-        const { error } = await supabase
+        const { error } = await getSupabase()
             .from('waitlist')
             .upsert([{
                 email,

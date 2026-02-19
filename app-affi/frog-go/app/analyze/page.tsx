@@ -12,6 +12,7 @@ import { saveAnalysis, getHistoryCount, AnalysisHistoryItem } from "@/lib/histor
 import { useAuth } from "@/lib/supabase/client";
 import Link from "next/link";
 import { ArrowLeft, History, Crown } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export default function AnalyzePage() {
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -27,6 +28,7 @@ export default function AnalyzePage() {
 
     // Use auth hook
     const { user } = useAuth();
+    const { t, lang } = useTranslation();
 
     // Wait for client mount before reading localStorage
     useEffect(() => {
@@ -65,14 +67,14 @@ export default function AnalyzePage() {
             const response = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ image: imageData }),
+                body: JSON.stringify({ image: imageData, lang }),
             });
 
             const result = await response.json();
 
             // Strict Validation Check
             if (result.isValid === false) {
-                const reason = result.reason || "Pour que l'IA puisse analyser le marché, merci d'importer une capture d'écran valide (Forex, Crypto, Stocks) avec des chandeliers ou une courbe.";
+                const reason = result.reason || t.analyze.defaultValidationError;
                 const suggestion = result.suggestion ? `\n\n💡 ${result.suggestion}` : "";
                 setError(`🐸 ${reason}${suggestion}`);
                 setUploadedImage(null);
@@ -88,7 +90,7 @@ export default function AnalyzePage() {
             setHistoryCount(getHistoryCount());
         } catch (err) {
             console.error("Analysis failed:", err);
-            setError("Oups ! Une erreur technique est survenue. Veuillez réessayer.");
+            setError(t.analyze.technicalError);
             setUploadedImage(null);
         } finally {
             setIsAnalyzing(false);
@@ -135,7 +137,7 @@ export default function AnalyzePage() {
                         <div className="mb-6 flex items-center justify-between">
                             <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-frog-green transition-colors">
                                 <ArrowLeft className="w-4 h-4" />
-                                Retour à l'Accueil
+                                {t.analyze.backHome}
                             </Link>
 
                             {/* History Button */}
@@ -144,7 +146,7 @@ export default function AnalyzePage() {
                                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm text-gray-300 hover:text-white transition-all"
                             >
                                 <History className="w-4 h-4" />
-                                <span>Historique {historyCount > 0 && `(${historyCount})`}</span>
+                                <span>{t.analyze.historyLabel} {historyCount > 0 && `(${historyCount})`}</span>
                             </button>
                         </div>
 
@@ -181,11 +183,11 @@ export default function AnalyzePage() {
                             </div>
 
                             <h1 className="text-4xl md:text-5xl font-black mb-3">
-                                <span className="text-white">Scanner IA </span>
-                                <span className="text-gradient">Premium</span>
+                                <span className="text-white">{t.analyze.premiumScanner} </span>
+                                <span className="text-gradient">{t.analyze.premium}</span>
                             </h1>
                             <p className="text-gray-400 max-w-md mx-auto">
-                                Intelligence artificielle de pointe pour l'analyse technique
+                                {t.analyze.tagline}
                             </p>
 
                             {/* Status badge */}
@@ -194,14 +196,14 @@ export default function AnalyzePage() {
                                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-frog-green/20 to-frog-cyan/20 border border-frog-green/30 rounded-full">
                                         <Crown className="w-4 h-4 text-frog-green" />
                                         <span className="text-sm font-bold text-frog-green">
-                                            Accès Lifetime Illimité
+                                            {t.analyze.lifetimeAccess}
                                         </span>
                                     </div>
                                 ) : (
                                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-frog-green/10 border border-frog-green/20 rounded-full">
                                         <div className="w-2 h-2 bg-frog-green rounded-full animate-pulse" />
                                         <span className="text-sm font-medium text-frog-green">
-                                            {remaining} {remaining === 1 ? 'scan gratuit restant' : 'scans gratuits restants'}
+                                            {remaining} {remaining === 1 ? t.analyze.scanFree : t.analyze.scansFree}
                                         </span>
                                     </div>
                                 )}
@@ -214,7 +216,7 @@ export default function AnalyzePage() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="mb-8 p-6 bg-red-900/30 border-2 border-red-500/50 rounded-xl text-center backdrop-blur-sm"
                             >
-                                <p className="text-lg text-white font-bold mb-1">Attention 🐸</p>
+                                <p className="text-lg text-white font-bold mb-1">{t.analyze.errorTitle}</p>
                                 <p className="text-red-300 whitespace-pre-line">{error.replace("⛔️ Image refusée : ", "").replace("🐸 Attention : ", "")}</p>
                             </motion.div>
                         )}

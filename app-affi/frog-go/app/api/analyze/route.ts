@@ -26,7 +26,11 @@ const groq = process.env.GROQ_API_KEY
 // PROMPT D'ANALYSE
 // ============================================================================
 
-const ANALYSIS_PROMPT = `Tu es un analyste technique expert en trading avec 20 ans d'expérience. Tu dois analyser ce graphique de trading de manière TRÈS DÉTAILLÉE et PROFESSIONNELLE.
+function getAnalysisPrompt(lang: string = "en") {
+    const isFr = lang === "fr";
+
+    return isFr
+        ? `Tu es un analyste technique expert en trading avec 20 ans d'expérience. Tu dois analyser ce graphique de trading de manière TRÈS DÉTAILLÉE et PROFESSIONNELLE.
 
 INSTRUCTIONS IMPORTANTES:
 1. Toutes les réponses doivent être en FRANÇAIS
@@ -60,39 +64,15 @@ Retourne UNIQUEMENT du JSON valide avec cette structure:
   "ema": "string or null",
   "volume": "string (ex: 'Volume croissant', 'Volume faible')",
   "confidence": 1-5,
-  
-  "keyObservations": [
-    "string (observation clé 1)",
-    "string (observation clé 2)",
-    "string (observation clé 3)"
-  ],
-  
+  "keyObservations": ["string", "string", "string"],
   "whyThisTrade": "string (2-3 phrases expliquant POURQUOI ce trade est intéressant)",
-  
   "invalidation": "string (conditions qui invalideraient ce trade)",
-  
-  "actionSteps": [
-    "string (étape 1)",
-    "string (étape 2)",
-    "string (étape 3)"
-  ],
-  
-  "bestEntry": "string (moment idéal pour entrer, ex: 'Attendre un pullback vers 42500' ou 'Entrer sur cassure de 45000 avec volume')",
-  
-  "dangerZones": [
-    "string (zone de danger 1, ex: 'Zone de liquidité à 41500 - risque de mèche')",
-    "string (zone de danger 2, ex: 'Résistance forte à 46000 - prendre profits partiels')"
-  ],
-  
-  "mistakesToAvoid": [
-    "string (erreur 1 à éviter, ex: 'Ne pas entrer avant confirmation du breakout')",
-    "string (erreur 2 à éviter, ex: 'Éviter de mettre le stop trop serré sous 42000')"
-  ],
-  
-  "marketContext": "string (contexte général du marché, ex: 'BTC en tendance haussière sur le Daily, ce setup s'aligne avec la tendance principale')",
-  
-  "timeEstimate": "string (temps estimé pour que le trade se joue, ex: '4-12 heures' ou '2-3 jours')",
-  
+  "actionSteps": ["string", "string", "string"],
+  "bestEntry": "string (moment idéal pour entrer)",
+  "dangerZones": ["string", "string"],
+  "mistakesToAvoid": ["string", "string"],
+  "marketContext": "string (contexte général du marché)",
+  "timeEstimate": "string (temps estimé pour que le trade se joue)",
   "analysisSummary": "string (résumé court de l'analyse)",
   "projection": { "direction": "up" | "down" | "sideways", "percentage": number },
   "narrative": "string (explication excitante et motivante du scénario)"
@@ -105,16 +85,64 @@ SEULEMENT si tu ne peux PAS analyser l'image, retourne ce JSON avec une raison S
   "suggestion": "CONSEIL POUR AMÉLIORER LA PHOTO"
 }
 
-Exemples de raisons possibles (adapte selon ce que tu vois):
-- "📷 Photo trop floue - Les chandeliers ne sont pas lisibles" + suggestion: "Tenez le téléphone stable et faites la mise au point sur l'écran"
-- "🔄 Angle trop incliné - Le graphique est difficilement visible" + suggestion: "Prenez la photo bien en face de l'écran"
-- "💡 Trop de reflets sur l'écran" + suggestion: "Évitez les sources de lumière derrière vous"
-- "🔍 Graphique trop petit dans l'image" + suggestion: "Zoomez sur le graphique ou rapprochez-vous"
-- "⬛ Image trop sombre" + suggestion: "Augmentez la luminosité de l'écran"
-- "🖼️ Ceci n'est pas un graphique de trading" + suggestion: "Uploadez une capture d'écran ou photo d'un graphique financier (chandeliers, courbes, etc.)"
-- "📊 Je ne vois pas assez de données sur le graphique" + suggestion: "Assurez-vous que le graphique montre au moins 20-30 chandeliers"
+IMPORTANT: Essaie TOUJOURS d'analyser le graphique si tu vois des chandeliers ou des courbes de prix. Ne rejette que si c'est vraiment impossible.`
+        : `You are an expert technical analyst in trading with 20 years of experience. You must analyze this trading chart in a VERY DETAILED and PROFESSIONAL manner.
 
-IMPORTANT: Essaie TOUJOURS d'analyser le graphique si tu vois des chandeliers ou des courbes de prix. Ne rejette que si c'est vraiment impossible.`;
+IMPORTANT INSTRUCTIONS:
+1. All responses must be in ENGLISH
+2. Be PRECISE and SPECIFIC in your analysis
+3. Use appropriate technical jargon
+4. Provide CONCRETE price levels when visible
+
+IMPORTANT - IMAGE ACCEPTANCE:
+- Accept SCREENSHOTS of charts (TradingView, Binance, MetaTrader, etc.)
+- Accept PHOTOS taken with a phone of a computer or phone screen showing a chart
+- Accept charts even if they are slightly blurry, tilted, or have reflections
+- If you see candlesticks, price lines, axes with prices/dates, it's a VALID chart
+- When in doubt, consider it a chart and analyze it
+
+Return ONLY valid JSON with this structure:
+{
+  "isValid": true,
+  "trend": "bullish" | "bearish" | "neutral",
+  "signal": "BULLISH" | "BEARISH" | "NEUTRAL",
+  "tradeGrade": "A" | "B" | "C" (A = excellent setup, B = decent, C = avoid),
+  "marketStructure": "string (structure description: higher highs/lows, range, etc.)",
+  "pattern": "string (identified pattern: double bottom, triangle, etc.) or null",
+  "support": number,
+  "resistance": number,
+  "stopLoss": number,
+  "target1": number,
+  "target2": number,
+  "riskReward": "string (e.g.: 1:2.5)",
+  "rsi": number or null,
+  "macd": "string or null",
+  "ema": "string or null",
+  "volume": "string (e.g.: 'Increasing volume', 'Low volume')",
+  "confidence": 1-5,
+  "keyObservations": ["string", "string", "string"],
+  "whyThisTrade": "string (2-3 sentences explaining WHY this trade is interesting)",
+  "invalidation": "string (conditions that would invalidate this trade)",
+  "actionSteps": ["string", "string", "string"],
+  "bestEntry": "string (ideal entry timing)",
+  "dangerZones": ["string", "string"],
+  "mistakesToAvoid": ["string", "string"],
+  "marketContext": "string (general market context)",
+  "timeEstimate": "string (estimated time for the trade to play out)",
+  "analysisSummary": "string (short analysis summary)",
+  "projection": { "direction": "up" | "down" | "sideways", "percentage": number },
+  "narrative": "string (exciting and motivating scenario explanation)"
+}
+
+ONLY if you CANNOT analyze the image, return this JSON with a SPECIFIC and HELPFUL reason:
+{
+  "isValid": false,
+  "reason": "SPECIFIC REASON HERE",
+  "suggestion": "TIP TO IMPROVE THE PHOTO"
+}
+
+IMPORTANT: ALWAYS try to analyze the chart if you see candlesticks or price curves. Only reject if it is truly impossible.`;
+}
 
 // ============================================================================
 // ROUTE API - POST
@@ -138,7 +166,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { image } = body;
+        const { image, lang } = body;
 
         // Validate image presence
         if (!image) {
@@ -188,7 +216,7 @@ export async function POST(request: NextRequest) {
 
         // Lancement de l'analyse
         console.log("[ANALYZE] Appel à Groq avec le modèle:", VISION_MODEL);
-        return await analyzeChartWithGroq(image);
+        return await analyzeChartWithGroq(image, lang || "en");
 
     } catch (error) {
         console.error("[ANALYZE] Erreur critique:", error);
@@ -203,7 +231,7 @@ export async function POST(request: NextRequest) {
 // FONCTION D'ANALYSE
 // ============================================================================
 
-async function analyzeChartWithGroq(imageBase64: string) {
+async function analyzeChartWithGroq(imageBase64: string, lang: string = "en") {
     if (!groq) {
         throw new Error("Client Groq non initialisé");
     }
@@ -214,7 +242,7 @@ async function analyzeChartWithGroq(imageBase64: string) {
             messages: [{
                 role: "user",
                 content: [
-                    { type: "text", text: ANALYSIS_PROMPT },
+                    { type: "text", text: getAnalysisPrompt(lang) },
                     { type: "image_url", image_url: { url: imageBase64 } },
                 ],
             }],

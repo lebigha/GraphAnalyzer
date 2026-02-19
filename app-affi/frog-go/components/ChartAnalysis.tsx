@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, TrendingUp, Target, AlertCircle, Activity, ArrowUpRight, ArrowDownRight, Zap, Calculator, ChevronRight, ChevronDown, BarChart3, Scan, Shield, Check, X, TrendingDown, Brain, Layers, AlertTriangle, Info, Eye, ListChecks, Clock } from "lucide-react";
 import ChartDrawingOverlay from "./ChartDrawingOverlay";
 import PredictionModal from "./PredictionModal";
+import { useTranslation } from "@/lib/i18n";
 
 interface ChartAnalysisProps {
     result: any;
@@ -53,7 +54,7 @@ function Widget({ title, icon: Icon, children, defaultOpen = true, accentColor =
 }
 
 // Signal Badge Component
-function SignalBadge({ signal, trend, confidence }: any) {
+function SignalBadge({ signal, trend, confidence, bullishLabel, bearishLabel, confidenceLabel }: any) {
     const isBullish = trend === 'bullish';
     return (
         <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${isBullish ? 'bg-frog-green/10 border-frog-green/30' : 'bg-red-500/10 border-red-500/30'}`}>
@@ -62,9 +63,9 @@ function SignalBadge({ signal, trend, confidence }: any) {
             </div>
             <div>
                 <div className={`text-lg font-black ${isBullish ? 'text-frog-green' : 'text-red-400'}`}>
-                    {isBullish ? 'HAUSSIER' : 'BAISSIER'}
+                    {isBullish ? bullishLabel : bearishLabel}
                 </div>
-                <div className="text-xs text-gray-400">Confiance: {confidence}/5</div>
+                <div className="text-xs text-gray-400">{confidenceLabel}: {confidence}/5</div>
             </div>
         </div>
     );
@@ -100,12 +101,13 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
     const [phase, setPhase] = useState<'scanning' | 'analyzed'>('scanning');
     const [showPrediction, setShowPrediction] = useState(false);
     const [scanStep, setScanStep] = useState(0);
+    const { t } = useTranslation();
 
     const scanSteps = [
-        { label: "Analyse de la structure", duration: 600 },
-        { label: "Détection des patterns", duration: 700 },
-        { label: "Calcul des niveaux", duration: 500 },
-        { label: "Génération du rapport", duration: 600 },
+        { label: t.analysis.scanSteps[0], duration: 600 },
+        { label: t.analysis.scanSteps[1], duration: 700 },
+        { label: t.analysis.scanSteps[2], duration: 500 },
+        { label: t.analysis.scanSteps[3], duration: 600 },
     ];
 
     useEffect(() => {
@@ -200,7 +202,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                 {/* "LIVE" badge */}
                                 <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-black/80 backdrop-blur rounded-full border border-frog-green/30">
                                     <span className="w-2 h-2 rounded-full bg-frog-green animate-pulse" />
-                                    <span className="text-xs font-mono text-frog-green uppercase tracking-wider">Analyse en cours</span>
+                                    <span className="text-xs font-mono text-frog-green uppercase tracking-wider">{t.analysis.analyzing}</span>
                                 </div>
                             </div>
                         </div>
@@ -285,7 +287,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold uppercase tracking-wider text-gray-300 transition-all"
                             >
                                 <Scan className="w-3.5 h-3.5" />
-                                Nouveau Scan
+                                {t.analysis.newScan}
                             </button>
                         </div>
 
@@ -307,7 +309,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                             {/* ROW 1: Signal + Quick Metrics */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {/* Signal Card */}
-                                <SignalBadge signal={result.signal} trend={result.trend} confidence={result.confidence} />
+                                <SignalBadge signal={result.signal} trend={result.trend} confidence={result.confidence} bullishLabel={t.analysis.bullish} bearishLabel={t.analysis.bearish} confidenceLabel={t.analysis.confidence} />
 
                                 {/* Quick Metrics */}
                                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/5">
@@ -316,7 +318,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                     </div>
                                     <div>
                                         <div className="text-lg font-mono font-bold text-white">{result.riskReward || "1:2.5"}</div>
-                                        <div className="text-xs text-gray-400">Ratio Risk/Reward</div>
+                                        <div className="text-xs text-gray-400">{t.analysis.riskReward}</div>
                                     </div>
                                 </div>
 
@@ -326,14 +328,14 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <Layers className="w-5 h-5 text-purple-400" />
                                     </div>
                                     <div>
-                                        <div className="text-sm font-bold text-white">{result.pattern || "Structure de marché"}</div>
-                                        <div className="text-xs text-gray-400">Pattern détecté</div>
+                                        <div className="text-sm font-bold text-white">{result.pattern || t.analysis.marketStructure}</div>
+                                        <div className="text-xs text-gray-400">{t.analysis.patternDetected}</div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* ROW 2: Enhanced AI Analysis Widget */}
-                            <Widget title="Analyse IA Détaillée" icon={Brain} defaultOpen={true} accentColor="frog-green">
+                            <Widget title={t.analysis.detailedAnalysis} icon={Brain} defaultOpen={true} accentColor="frog-green">
                                 <div className="space-y-4">
                                     {/* Trade Grade Badge */}
                                     {result.tradeGrade && (
@@ -346,10 +348,10 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                             </div>
                                             <div>
                                                 <div className="text-sm font-bold text-white">
-                                                    {result.tradeGrade === 'A' ? 'Setup Excellent' :
-                                                        result.tradeGrade === 'B' ? 'Setup Correct' : 'À Éviter'}
+                                                    {result.tradeGrade === 'A' ? t.analysis.setupExcellent :
+                                                        result.tradeGrade === 'B' ? t.analysis.setupOk : t.analysis.setupAvoid}
                                                 </div>
-                                                <div className="text-xs text-gray-400">Note du Trade</div>
+                                                <div className="text-xs text-gray-400">{t.analysis.tradeGrade}</div>
                                             </div>
                                         </div>
                                     )}
@@ -359,7 +361,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <div className="p-3 bg-frog-green/5 border border-frog-green/10 rounded-lg">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Sparkles className="w-3.5 h-3.5 text-frog-green" />
-                                                <span className="text-[10px] font-bold text-frog-green uppercase tracking-widest">Pourquoi ce Trade ?</span>
+                                                <span className="text-[10px] font-bold text-frog-green uppercase tracking-widest">{t.analysis.whyThisTrade}</span>
                                             </div>
                                             <p className="text-sm text-gray-200 leading-relaxed">{result.whyThisTrade}</p>
                                         </div>
@@ -370,7 +372,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Eye className="w-3.5 h-3.5 text-blue-400" />
-                                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Observations Clés</span>
+                                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">{t.analysis.keyObservations}</span>
                                             </div>
                                             <ul className="space-y-2">
                                                 {result.keyObservations.map((obs: string, i: number) => (
@@ -388,7 +390,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <div className="p-3 bg-red-500/5 border border-red-500/10 rounded-lg">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-                                                <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Invalidation</span>
+                                                <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">{t.analysis.invalidation}</span>
                                             </div>
                                             <p className="text-sm text-gray-300">{result.invalidation}</p>
                                         </div>
@@ -399,7 +401,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-lg">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <ListChecks className="w-3.5 h-3.5 text-cyan-400" />
-                                                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Actions à Faire</span>
+                                                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">{t.analysis.actionSteps}</span>
                                             </div>
                                             <ol className="space-y-2">
                                                 {result.actionSteps.map((step: string, i: number) => (
@@ -417,7 +419,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <div className="p-3 bg-frog-green/5 border border-frog-green/10 rounded-lg">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Target className="w-3.5 h-3.5 text-frog-green" />
-                                                <span className="text-[10px] font-bold text-frog-green uppercase tracking-widest">Meilleur Moment d'Entrée</span>
+                                                <span className="text-[10px] font-bold text-frog-green uppercase tracking-widest">{t.analysis.bestEntry}</span>
                                             </div>
                                             <p className="text-sm text-gray-200">{result.bestEntry}</p>
                                         </div>
@@ -428,7 +430,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <div className="p-3 bg-orange-500/5 border border-orange-500/10 rounded-lg">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <AlertTriangle className="w-3.5 h-3.5 text-orange-400" />
-                                                <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Zones de Danger</span>
+                                                <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">{t.analysis.dangerZones}</span>
                                             </div>
                                             <ul className="space-y-1">
                                                 {result.dangerZones.map((zone: string, i: number) => (
@@ -446,7 +448,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         <div className="p-3 bg-red-500/5 border border-red-500/10 rounded-lg">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <X className="w-3.5 h-3.5 text-red-400" />
-                                                <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Erreurs à Éviter</span>
+                                                <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">{t.analysis.mistakesToAvoid}</span>
                                             </div>
                                             <ul className="space-y-1">
                                                 {result.mistakesToAvoid.map((mistake: string, i: number) => (
@@ -465,7 +467,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                             <div className="p-3 bg-purple-500/5 border border-purple-500/10 rounded-lg">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
-                                                    <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Contexte Marché</span>
+                                                    <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">{t.analysis.marketContext}</span>
                                                 </div>
                                                 <p className="text-sm text-gray-300">{result.marketContext}</p>
                                             </div>
@@ -474,7 +476,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                             <div className="p-3 bg-white/5 border border-white/10 rounded-lg">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <Clock className="w-3.5 h-3.5 text-gray-400" />
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Temps Estimé</span>
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.analysis.timeEstimate}</span>
                                                 </div>
                                                 <p className="text-sm text-white font-mono">{result.timeEstimate}</p>
                                             </div>
@@ -492,17 +494,17 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
                                 {/* Widget: Trade Levels */}
-                                <Widget title="Niveaux de Trade" icon={Target} defaultOpen={true} accentColor="frog-green">
+                                <Widget title={t.analysis.tradeLevels} icon={Target} defaultOpen={true} accentColor="frog-green">
                                     <div className="space-y-2">
-                                        <LevelRow label="Zone d'Entrée" value={entryPrice} type="entry" />
-                                        <LevelRow label="Stop Loss" value={result.stopLoss} type="stop" />
-                                        <LevelRow label="Objectif 1" value={result.target1} type="target1" />
-                                        <LevelRow label="Objectif 2" value={result.target2} type="target2" />
+                                        <LevelRow label={t.analysis.entryZone} value={entryPrice} type="entry" />
+                                        <LevelRow label={t.analysis.stopLoss} value={result.stopLoss} type="stop" />
+                                        <LevelRow label={t.analysis.target1} value={result.target1} type="target1" />
+                                        <LevelRow label={t.analysis.target2} value={result.target2} type="target2" />
                                     </div>
                                 </Widget>
 
                                 {/* Widget: Technical Indicators */}
-                                <Widget title="Indicateurs Techniques" icon={BarChart3} defaultOpen={true} accentColor="blue">
+                                <Widget title={t.analysis.technicalIndicators} icon={BarChart3} defaultOpen={true} accentColor="blue">
                                     <div className="space-y-3">
                                         {/* RSI */}
                                         <div>
@@ -523,13 +525,13 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                         {/* Volume & EMA */}
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="p-2 bg-white/5 rounded-lg">
-                                                <span className="text-[10px] text-gray-500 uppercase block">Volume</span>
+                                                <span className="text-[10px] text-gray-500 uppercase block">{t.analysis.volume}</span>
                                                 <span className="text-xs font-mono text-white">{result.volume || "Normal"}</span>
                                             </div>
                                             <div className="p-2 bg-white/5 rounded-lg">
-                                                <span className="text-[10px] text-gray-500 uppercase block">Tendance EMA</span>
+                                                <span className="text-[10px] text-gray-500 uppercase block">{t.analysis.emaTrend}</span>
                                                 <span className={`text-xs font-mono ${result.trend === 'bullish' ? 'text-frog-green' : 'text-red-400'}`}>
-                                                    {result.trend === 'bullish' ? 'Au-dessus' : 'En dessous'}
+                                                    {result.trend === 'bullish' ? t.analysis.above : t.analysis.below}
                                                 </span>
                                             </div>
                                         </div>
@@ -545,28 +547,28 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                 </Widget>
 
                                 {/* Widget: Strategy */}
-                                <Widget title="Stratégie Recommandée" icon={Shield} defaultOpen={true} accentColor="blue">
+                                <Widget title={t.analysis.recommendedStrategy} icon={Shield} defaultOpen={true} accentColor="blue">
                                     <div className="space-y-3">
                                         <div className="text-xs text-gray-300 font-mono leading-relaxed p-3 bg-blue-500/5 border border-blue-500/10 rounded-lg">
                                             {result.trend === 'bullish'
-                                                ? "📈 [LONG] Attendre un pullback vers le support. Confirmation par volume requise avant entrée."
-                                                : "📉 [SHORT] Vendre les rebonds sous résistance. Gérer le risque avec un stop serré."}
+                                                ? t.analysis.longStrategy
+                                                : t.analysis.shortStrategy}
                                         </div>
 
                                         {/* Checklist */}
                                         <div className="space-y-2">
-                                            <div className="text-[10px] font-bold text-gray-500 uppercase">Check-list</div>
+                                            <div className="text-[10px] font-bold text-gray-500 uppercase">{t.analysis.checklist}</div>
                                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                                 {result.trend === 'bullish' ? <Check className="w-3.5 h-3.5 text-frog-green" /> : <X className="w-3.5 h-3.5 text-red-400" />}
-                                                Alignement de tendance
+                                                {t.analysis.trendAlignment}
                                             </div>
                                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                                 {result.confidence >= 4 ? <Check className="w-3.5 h-3.5 text-frog-green" /> : <Activity className="w-3.5 h-3.5 text-yellow-500" />}
-                                                Confiance élevée ({result.confidence}/5)
+                                                {t.analysis.highConfidence} ({result.confidence}/5)
                                             </div>
                                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                                 {result.riskReward ? <Check className="w-3.5 h-3.5 text-frog-green" /> : <Info className="w-3.5 h-3.5 text-gray-500" />}
-                                                Ratio R:R favorable
+                                                {t.analysis.favorableRR}
                                             </div>
                                         </div>
                                     </div>
@@ -580,7 +582,7 @@ export default function ChartAnalysis({ result, uploadedImage, onNewAnalysis }: 
                                 className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-frog-green to-frog-cyan hover:from-frog-green/90 hover:to-frog-cyan/90 text-black text-sm font-black uppercase tracking-wider shadow-[0_0_30px_rgba(0,255,157,0.2)] hover:shadow-[0_0_50px_rgba(0,255,157,0.4)] transition-all group"
                             >
                                 <Sparkles className="w-5 h-5 fill-black group-hover:rotate-12 transition-transform" />
-                                Lancer la Prédiction IA
+                                {t.analysis.launchPrediction}
                                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
 

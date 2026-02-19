@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { TrendingUp, TrendingDown, Minus, X, Sparkles } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 interface PredictionModalProps {
     trend: 'bullish' | 'bearish' | 'neutral';
@@ -27,6 +28,7 @@ interface Candle {
 export default function PredictionModal({ trend, projection, narrative, support, resistance, isOpen, onClose }: PredictionModalProps) {
     const [visibleCandles, setVisibleCandles] = useState(0);
     const [showPrediction, setShowPrediction] = useState(false);
+    const { t } = useTranslation();
 
     const historicalCandlesCount = 30; // Doubled from 15
     const predictionCandlesCount = 20; // Doubled from 10
@@ -153,7 +155,7 @@ export default function PredictionModal({ trend, projection, narrative, support,
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-frog-cyan" />
-                        <h2 className="text-lg font-bold text-white">Prédiction IA</h2>
+                        <h2 className="text-lg font-bold text-white">{t.prediction.title}</h2>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg">
                         <X className="w-5 h-5 text-gray-400" />
@@ -164,7 +166,7 @@ export default function PredictionModal({ trend, projection, narrative, support,
                 {narrative && (
                     <div className="mb-4 p-3 bg-gradient-to-r from-frog-green/10 to-frog-cyan/10 border-l-2 border-frog-green rounded-r-lg">
                         <p className="text-xs font-bold text-frog-green uppercase tracking-wider mb-1 flex items-center gap-1">
-                            <Sparkles className="w-3 h-3" /> Aperçu Exclusif
+                            <Sparkles className="w-3 h-3" /> {t.prediction.exclusiveInsight}
                         </p>
                         <p className="text-sm text-gray-200 italic leading-relaxed">
                             "{narrative}"
@@ -178,13 +180,13 @@ export default function PredictionModal({ trend, projection, narrative, support,
                         <TrendIcon className={`w-6 h-6 ${projection.direction === 'up' ? 'text-green-400' : projection.direction === 'down' ? 'text-red-400' : 'text-gray-400'}`} />
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400">Mouvement Cible</p>
+                        <p className="text-xs text-gray-400">{t.prediction.targetMovement}</p>
                         <p className={`text-2xl font-bold font-mono ${projection.direction === 'up' ? 'text-green-400' : projection.direction === 'down' ? 'text-red-400' : 'text-gray-400'}`}>
                             {projection.direction === 'up' ? '+' : projection.direction === 'down' ? '-' : ''}{projection.percentage}%
                         </p>
                     </div>
                     <div className="ml-auto text-right">
-                        <p className="text-xs text-gray-500">Tendance</p>
+                        <p className="text-xs text-gray-500">{t.prediction.trend}</p>
                         <p className={`text-sm font-bold uppercase ${trend === 'bullish' ? 'text-green-400' : trend === 'bearish' ? 'text-red-400' : 'text-gray-400'}`}>
                             {trend}
                         </p>
@@ -277,7 +279,7 @@ export default function PredictionModal({ trend, projection, narrative, support,
                             fontWeight="bold"
                             style={{ opacity: 0.5 }}
                         >
-                            HISTORIQUE
+                            {t.prediction.history}
                         </text>
 
                         {/* Divider Line between History and Prediction */}
@@ -310,7 +312,7 @@ export default function PredictionModal({ trend, projection, narrative, support,
                                     textAnchor="middle"
                                     dominantBaseline="middle"
                                 >
-                                    MAINTENANT
+                                    {t.prediction.now}
                                 </text>
                             </g>
                         )}
@@ -325,7 +327,7 @@ export default function PredictionModal({ trend, projection, narrative, support,
                                     fontSize="10"
                                     fontWeight="bold"
                                 >
-                                    PRÉVISION IA →
+                                    {t.prediction.aiForecast}
                                 </text>
 
                                 {/* Target Price Tag at end of chart */}
@@ -345,7 +347,7 @@ export default function PredictionModal({ trend, projection, narrative, support,
                                     fontWeight="bold"
                                     textAnchor="middle"
                                 >
-                                    CIBLE
+                                    {t.prediction.target}
                                 </text>
                             </g>
                         )}
@@ -355,7 +357,7 @@ export default function PredictionModal({ trend, projection, narrative, support,
                 {/* Footer */}
                 <div className="mt-3 flex justify-between text-xs text-gray-500">
                     <span>S: ${support?.toLocaleString() || 'N/A'}</span>
-                    <span className="text-frog-cyan">Modèle IA v3.1</span>
+                    <span className="text-frog-cyan">{t.prediction.aiModel}</span>
                     <span>R: ${resistance?.toLocaleString() || 'N/A'}</span>
                 </div>
             </div>

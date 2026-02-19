@@ -1,75 +1,48 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-
-const testimonials = [
-    {
-        name: "Alex R.",
-        role: "Forex Trader",
-        text: "J'ai attrapé le mouvement de 140 pips sur GBP/JPY grâce aux Entry Signals. Le Risk/Reward calculator change la donne.",
-        verified: true,
-    },
-    {
-        name: "Sarah K.",
-        role: "Crypto Analyst",
-        text: "Enfin une IA qui comprend la Market Structure. Les Support Zones sont effrayantes de précision.",
-        verified: true,
-    },
-    {
-        name: "David Chen",
-        role: "Day Trader",
-        text: "J'étais sceptique, mais le 'Invalidation Level' m'a sauvé d'un mauvais Short Setup. Rentabilisé en un seul trade.",
-        verified: true,
-    },
-    {
-        name: "Marcus J.",
-        role: "Swing Trader",
-        text: "Le projection model est dingue. Il a prédit le Pullback au dollar près.",
-        verified: true,
-    },
-    {
-        name: "Elena V.",
-        role: "Full-time Trader",
-        text: "Simple, propre et rapide. Pas de superflu, juste les niveaux dont j'ai besoin pour placer mes Limit Orders.",
-        verified: true,
-    },
-];
+import { useTranslation } from "@/lib/i18n";
 
 export default function Testimonials() {
-    return (
-        <section className="py-20 relative overflow-hidden border-y border-white/5 bg-[#080c14]">
-            <div className="container mx-auto px-4 mb-12 text-center">
-                <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tight">
-                    Ils ont Arrêté de <span className="text-red-400">Perdre</span>.
-                    <br className="hidden md:block" />
-                    Ils ont Commencé à <span className="text-frog-green">Trader</span>.
-                </h2>
-                <p className="text-gray-400">+10 000 traders utilisent Frog AI pour valider leurs setups.</p>
-            </div>
+    const { t } = useTranslation();
 
-            {/* Marquee Container */}
-            <div className="relative flex overflow-x-hidden mask-linear-fade">
-                <div className="animate-marquee flex gap-6 whitespace-nowrap py-4">
-                    {[...testimonials, ...testimonials].map((t, i) => (
-                        <div
-                            key={i}
-                            className="bg-white/5 border border-white/10 p-6 rounded-xl w-[350px] shrink-0 hover:bg-white/10 transition-colors"
-                        >
-                            <div className="flex items-center gap-1 mb-3">
-                                {[1, 2, 3, 4, 5].map((s) => (
-                                    <Star key={s} className="w-4 h-4 fill-frog-green text-frog-green" />
+    const testimonials = [
+        { name: "Marc D.", role: "Forex Trader", text: t.testimonials.t1, verified: true },
+        { name: "Sarah L.", role: "Crypto Trader", text: t.testimonials.t2, verified: true },
+        { name: "Thomas R.", role: "Swing Trader", text: t.testimonials.t3, verified: true },
+        { name: "Julie P.", role: "Day Trader", text: t.testimonials.t4, verified: true },
+        { name: "Kevin M.", role: "Scalper", text: t.testimonials.t5, verified: true },
+    ];
+
+    return (
+        <section className="py-24 px-4 bg-[#05070a]">
+            <div className="container mx-auto max-w-6xl">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-5xl font-black mb-4">
+                        {t.testimonials.title1} <span className="text-red-400">{t.testimonials.titleLose}</span>.
+                        <br />
+                        {t.testimonials.title2} <span className="text-frog-green">{t.testimonials.titleTrade}</span>.
+                    </h2>
+                    <p className="text-gray-400">{t.testimonials.subtitle}</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {testimonials.map((item, i) => (
+                        <div key={i} className="glass-card p-6 hover:border-frog-green/30 transition-all duration-300 group">
+                            <div className="flex items-center gap-1 mb-4">
+                                {[...Array(5)].map((_, j) => (
+                                    <Star key={j} className="w-4 h-4 text-frog-green fill-frog-green" />
                                 ))}
                             </div>
-                            <p className="text-gray-300 mb-4 whitespace-normal text-sm leading-relaxed">"{t.text}"</p>
+                            <p className="text-gray-300 mb-4 leading-relaxed">"{item.text}"</p>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-bold text-white text-sm">{t.name}</p>
-                                    <p className="text-xs text-gray-500 font-mono">{t.role}</p>
+                                    <p className="font-bold text-white text-sm">{item.name}</p>
+                                    <p className="text-xs text-gray-500">{item.role}</p>
                                 </div>
-                                {t.verified && (
-                                    <span className="text-[10px] bg-frog-green/10 text-frog-green px-2 py-1 rounded-full border border-frog-green/20">
-                                        VÉRIFIÉ
+                                {item.verified && (
+                                    <span className="text-[10px] font-mono text-frog-green bg-frog-green/10 px-2 py-1 rounded-full">
+                                        ✓ {t.testimonials.verified}
                                     </span>
                                 )}
                             </div>
@@ -77,10 +50,6 @@ export default function Testimonials() {
                     ))}
                 </div>
             </div>
-
-            {/* Fade Edges */}
-            <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-[#080c14] to-transparent pointer-events-none" />
-            <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-[#080c14] to-transparent pointer-events-none" />
         </section>
     );
 }

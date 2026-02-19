@@ -1,0 +1,381 @@
+const fr = {
+    // Layout / Meta
+    meta: {
+        title: "Frog AI - Analyse Graphique IA Avancée",
+        description: "Analyse graphique de trading professionnelle propulsée par Frog AI.",
+    },
+
+    // Homepage
+    home: {
+        badge: "+12 847 ANALYSES CETTE SEMAINE",
+        heroTitle1: "Vous Voyez un Graphique.",
+        heroTitle2: "L'IA Voit Votre Prochain Trade.",
+        heroSubtitle: "L'outil que les traders pro gardaient pour eux. Uploadez une photo de n'importe quel graphique —",
+        heroAssets: "Crypto, Forex, Actions",
+        heroResult: "Entrée, Stop Loss et Take Profit",
+        heroResultSuffix: "en 2 secondes.",
+        ctaAnalyze: "Analyser Mon Graphique",
+        noSignup: "Aucune inscription",
+        resultIn2s: "Résultat en 2s",
+        socialProof: "Approuvé par des traders de",
+        // Problem/Solution
+        problemTitle: "Pourquoi 90% des Débutants Perdent",
+        problemSubtitle: "Ce n'est pas le marché. C'est la méthode.",
+        oldWayTitle: "Le Trader Sans IA",
+        oldWay1: "Vous tracez des lignes... mais le prix les ignore",
+        oldWay2: "Stop Loss touché pile avant le pump",
+        oldWay3: "RSI, MACD, Fibonacci... mais lequel croire ?",
+        oldWay4: "Vous entrez en FOMO, vous sortez en panique",
+        newWayTitle: "Le Trader avec Frog AI",
+        newWay1: "Niveaux précis : Entrée, TP1, TP2, Stop Loss",
+        newWay2: "Zéro émotion, zéro FOMO, zéro revenge trading",
+        newWay3: "Analyse en 2 secondes, pas en 2 heures",
+        newWay4: "Photo → Analyse. Simple comme un screenshot",
+        // How it works
+        howTitle: "3 Étapes vers le Profit",
+        howSubtitle: "Analyse complexe, zéro complexité.",
+        step1Title: "1. Uploadez",
+        step1Desc: "Prenez une capture d'écran de n'importe quel actif (Crypto, Forex, Actions). On gère le reste.",
+        step2Title: "2. Scan IA",
+        step2Desc: "Notre modèle Vision identifie la structure du marché, les niveaux clés et les patterns.",
+        step3Title: "3. Exécutez",
+        step3Desc: "Recevez instantanément vos niveaux d'Entrée, Stop Loss et Take Profit.",
+        // AI Prediction feature
+        exclusiveFeature: "Fonctionnalité Exclusive",
+        predTitle1: "Prédiction IA",
+        predTitle2: "Visualisée en Temps Réel",
+        predDesc: "Notre IA ne se contente pas d'analyser — elle",
+        predDescBold: "prédit la trajectoire probable",
+        predDescEnd: "du prix. Visualisez directement sur votre graphique la projection du mouvement avec les zones de support et résistance.",
+        predFeature1: "Projection du prix en temps réel",
+        predFeature2: "Zones de Take Profit optimales",
+        predFeature3: "Stop Loss intelligent basé sur la volatilité",
+        predCta: "Essayer la Prédiction IA",
+        predicted: "prédit",
+        accuracy: "Précision",
+        analysisTime: "Temps d'analyse",
+        available: "Disponible",
+        // Final CTA
+        finalTitle1: "Votre Prochain Trade",
+        finalTitle2: "Commence Ici.",
+        finalSubtitle: "Fini les heures d'analyse. Fini les doutes. Prenez une photo, obtenez vos niveaux, tradez avec confiance.",
+        finalCta: "Analyser Mon Graphique Gratuitement",
+        noCard: "Aucune carte",
+        resultIn2sFull: "Résultat en 2 secondes",
+    },
+
+    // FAQ
+    faq: {
+        title: "Questions Fréquentes",
+        subtitle: "Tout ce que vous devez savoir sur le trading avec Frog AI.",
+        q1: "C'est une arnaque comme les signaux Telegram ?",
+        a1: "Non. Frog AI ne vend pas de signaux. Vous uploadez VOTRE graphique, vous recevez VOTRE analyse. Pas de groupe privé, pas de \"call\" mystérieux. Juste une IA qui lit le prix comme un pro et vous donne les niveaux clés. Vous gardez le contrôle total.",
+        q2: "Et si l'IA se trompe ?",
+        a2: "Aucun outil n'est parfait à 100%. Frog AI affiche un taux de précision de 89% sur l'identification des tendances et niveaux clés (testé sur +12 000 graphiques). Utilisez-le comme un second avis pour valider votre analyse, pas comme une boule de cristal.",
+        q3: "C'est vraiment gratuit ?",
+        a3: "Oui ! 3 analyses gratuites par jour, aucune carte bancaire requise, aucune inscription. On croit en la valeur d'abord. Si vous voulez des scans illimités, une version Pro sera disponible bientôt.",
+        q4: "Ça marche sur Crypto, Forex ET Actions ?",
+        a4: "Absolument. L'IA analyse la structure du prix : supports, résistances, tendances. Ces concepts sont universels. Bitcoin en 15min, EUR/USD en H4, ou Tesla en Daily — même logique, même précision.",
+        q5: "Mes graphiques sont-ils privés ?",
+        a5: "100%. Vos images sont traitées de façon éphémère par notre moteur d'IA sécurisé. Aucune donnée n'est stockée, vendue ou partagée. Vous restez anonyme.",
+    },
+
+    // Testimonials
+    testimonials: {
+        title1: "Ils ont Arrêté de",
+        titleLose: "Perdre",
+        title2: "Ils ont Commencé à",
+        titleTrade: "Trader",
+        subtitle: "+10 000 traders utilisent Frog AI pour valider leurs setups.",
+        verified: "VÉRIFIÉ",
+        t1: "J'ai attrapé le mouvement de 140 pips sur GBP/JPY grâce aux Entry Signals. Le Risk/Reward calculator change la donne.",
+        t2: "Enfin une IA qui comprend la Market Structure. Les Support Zones sont effrayantes de précision.",
+        t3: "J'étais sceptique, mais le 'Invalidation Level' m'a sauvé d'un mauvais Short Setup. Rentabilisé en un seul trade.",
+        t4: "Le projection model est dingue. Il a prédit le Pullback au dollar près.",
+        t5: "Simple, propre et rapide. Pas de superflu, juste les niveaux dont j'ai besoin pour placer mes Limit Orders.",
+    },
+
+    // Footer
+    footer: {
+        allRights: "Tous droits réservés.",
+        cgu: "CGU",
+        privacy: "Confidentialité",
+        contact: "Contact",
+        disclaimer: "Frog AI ne fournit pas de conseils financiers. Le trading comporte des risques de perte en capital. Les analyses sont à titre indicatif uniquement.",
+        warning: "Avertissement :",
+    },
+
+    // FomoCounter
+    fomo: {
+        complete: "COMPLET",
+        completeDesc: "Toutes les places ont été prises. Rejoins la liste d'attente.",
+        joinWaitlist: "📧 Rejoindre la liste d'attente",
+        limitedAccess: "Accès Limité",
+        registered: "inscrits",
+        spotsLeft: "places restantes sur",
+        filledOffer: "rempli - Offre bientôt terminée",
+    },
+
+    // WaitlistModal
+    waitlist: {
+        title: "Rejoins la Liste VIP",
+        subtitle: "Sois le premier informé quand des places se libèrent",
+        emailRequired: "Email requis",
+        errorSignup: "Erreur lors de l'inscription",
+        successTitle: "Tu es inscrit! 🎉",
+        successDesc: "On te contacte dès qu'une place se libère.",
+        close: "Fermer",
+        emailLabel: "Email *",
+        emailPlaceholder: "ton@email.com",
+        phoneLabel: "Téléphone (optionnel)",
+        phonePlaceholder: "+1 234 567 890",
+        submit: "Rejoindre la liste",
+        privacyNote: "🔒 Tes données restent confidentielles. Pas de spam.",
+    },
+
+    // PaywallModal
+    paywall: {
+        lifetimeAccess: "Lifetime",
+        accessTitle: "Accès",
+        subtitle: "Paiement unique, accès à vie",
+        feature1: "Analyses illimitées à vie",
+        feature2: "Prédiction IA avancée",
+        feature3: "Tous les futurs updates gratuits",
+        feature4: "Support prioritaire",
+        emailPlaceholder: "Ton email",
+        phonePlaceholder: "Ton numéro de téléphone",
+        emailRequired: "Email requis pour la facture",
+        errorPayment: "Erreur lors du paiement. Réessaye.",
+        cta: "Obtenir l'accès - $47",
+        oneTimePayment: "Paiement unique",
+        securedBy: "Paiement sécurisé par Stripe",
+    },
+
+    // AuthModal
+    auth: {
+        createAccount: "Créer un compte",
+        reset: "Réinitialisation",
+        login: "Connexion",
+        signupSubtitle: "Rejoins les traders qui utilisent l'IA",
+        resetSubtitle: "Entre ton email pour recevoir un lien",
+        loginSubtitle: "Content de te revoir !",
+        authUnavailable: "Service d'authentification non disponible",
+        passwordMismatch: "Les mots de passe ne correspondent pas",
+        accountCreated: "Compte créé ! Tu peux maintenant te connecter.",
+        resetSent: "Un email de réinitialisation a été envoyé !",
+        wrongCredentials: "Email ou mot de passe incorrect",
+        alreadyRegistered: "Cet email est déjà utilisé. Connecte-toi !",
+        genericError: "Une erreur est survenue",
+        phonePlaceholder: "Numéro de téléphone",
+        passwordPlaceholder: "Mot de passe",
+        confirmPassword: "Confirmer le mot de passe",
+        forgotPassword: "Mot de passe oublié ?",
+        createMyAccount: "Créer mon compte",
+        sendLink: "Envoyer le lien",
+        signIn: "Se connecter",
+        alreadyHaveAccount: "Déjà un compte ?",
+        backTo: "Retour à la ",
+        noAccount: "Pas encore de compte ?",
+        signUp: "S'inscrire",
+    },
+
+    // ImageUpload
+    upload: {
+        instantAnalysis: "Analyse Instantanée",
+        instantDesc: "Résultats en < 5 sec",
+        patternRecognition: "Pattern Recognition",
+        patternDesc: "50+ patterns détectés",
+        riskManagement: "Gestion du Risque",
+        riskDesc: "R:R optimal calculé",
+        analyzing: "Analyse en cours...",
+        identifyingPatterns: "Identification des patterns",
+        dropHere: "Déposez-le ici ! 🐸",
+        scanTitle: "Scannez votre",
+        scanHighlight: "graphique",
+        scanDesc: "Glissez-déposez votre capture d'écran de trading, ou cliquez pour sélectionner.",
+        takePhoto: "📸 Prendre une Photo",
+        browseFiles: "📂 Parcourir les Fichiers",
+        pasteHint: "Ctrl+V pour coller depuis le presse-papiers",
+        compatibleWith: "Compatible avec",
+        andMore: "et plus",
+    },
+
+    // UpsellModal
+    upsell: {
+        waitTitle: "Attends ! Une dernière chose...",
+        waitDesc: "Maximise tes profits en rejoignant notre communauté privée.",
+        joinVip: "Rejoindre le Groupe VIP",
+        dailySignals: "Signaux quotidiens & entraide",
+        recommendedBroker: "Broker Recommandé",
+        welcomeBonus: "Bonus de bienvenue jusqu'à $500",
+        noThanks: "Non merci, je veux juste accéder à l'app",
+    },
+
+    // ChartAnalysis
+    analysis: {
+        scanSteps: [
+            "Analyse de la structure",
+            "Détection des patterns",
+            "Calcul des niveaux",
+            "Génération du rapport",
+        ],
+        analyzing: "Analyse en cours",
+        newScan: "Nouveau Scan",
+        bullish: "HAUSSIER",
+        bearish: "BAISSIER",
+        confidence: "Confiance",
+        riskReward: "Ratio Risk/Reward",
+        patternDetected: "Pattern détecté",
+        marketStructure: "Structure de marché",
+        detailedAnalysis: "Analyse IA Détaillée",
+        setupExcellent: "Setup Excellent",
+        setupOk: "Setup Correct",
+        setupAvoid: "À Éviter",
+        tradeGrade: "Note du Trade",
+        whyThisTrade: "Pourquoi ce Trade ?",
+        keyObservations: "Observations Clés",
+        invalidation: "Invalidation",
+        actionSteps: "Actions à Faire",
+        bestEntry: "Meilleur Moment d'Entrée",
+        dangerZones: "Zones de Danger",
+        mistakesToAvoid: "Erreurs à Éviter",
+        marketContext: "Contexte Marché",
+        timeEstimate: "Temps Estimé",
+        tradeLevels: "Niveaux de Trade",
+        entryZone: "Zone d'Entrée",
+        stopLoss: "Stop Loss",
+        target1: "Objectif 1",
+        target2: "Objectif 2",
+        technicalIndicators: "Indicateurs Techniques",
+        volume: "Volume",
+        emaTrend: "Tendance EMA",
+        above: "Au-dessus",
+        below: "En dessous",
+        recommendedStrategy: "Stratégie Recommandée",
+        longStrategy: "📈 [LONG] Attendre un pullback vers le support. Confirmation par volume requise avant entrée.",
+        shortStrategy: "📉 [SHORT] Vendre les rebonds sous résistance. Gérer le risque avec un stop serré.",
+        checklist: "Check-list",
+        trendAlignment: "Alignement de tendance",
+        highConfidence: "Confiance élevée",
+        favorableRR: "Ratio R:R favorable",
+        launchPrediction: "Lancer la Prédiction IA",
+    },
+
+    // HistoryDrawer
+    history: {
+        title: "Historique",
+        analyses: "analyses",
+        noAnalysis: "Aucune analyse",
+        analysesWillAppear: "Vos analyses apparaîtront ici",
+        clearAll: "Effacer tout l'historique",
+        clearConfirm: "Effacer tout l'historique ?",
+        justNow: "À l'instant",
+        minutesAgo: "Il y a {n}min",
+        hoursAgo: "Il y a {n}h",
+        daysAgo: "Il y a {n}j",
+    },
+
+    // PredictionModal
+    prediction: {
+        title: "Prédiction IA",
+        exclusiveInsight: "Aperçu Exclusif",
+        targetMovement: "Mouvement Cible",
+        trend: "Tendance",
+        history: "HISTORIQUE",
+        now: "MAINTENANT",
+        aiForecast: "PRÉVISION IA →",
+        target: "CIBLE",
+        aiModel: "Modèle IA v3.1",
+    },
+
+    // Analyze Page
+    analyze: {
+        backHome: "Retour à l'Accueil",
+        historyLabel: "Historique",
+        premiumScanner: "Scanner IA",
+        premium: "Premium",
+        tagline: "Intelligence artificielle de pointe pour l'analyse technique",
+        lifetimeAccess: "Accès Lifetime Illimité",
+        scanFree: "scan gratuit restant",
+        scansFree: "scans gratuits restants",
+        errorTitle: "Attention 🐸",
+        defaultValidationError: "Pour que l'IA puisse analyser le marché, merci d'importer une capture d'écran valide (Forex, Crypto, Stocks) avec des chandeliers ou une courbe.",
+        technicalError: "Oups ! Une erreur technique est survenue. Veuillez réessayer.",
+    },
+
+    // CGU Page
+    cgu: {
+        back: "Retour",
+        title: "Conditions Générales d'Utilisation",
+        lastUpdate: "Dernière mise à jour : Janvier 2026",
+        backHome: "← Retour à l'accueil",
+        art1Title: "Article 1 - Objet",
+        art1: "Les présentes conditions générales d'utilisation régissent l'accès et l'utilisation du service Frog AI, plateforme d'analyse de graphiques financiers assistée par intelligence artificielle. L'utilisation du service implique l'acceptation pleine et entière des présentes conditions.",
+        art2Title: "Article 2 - Description du Service",
+        art2: "Frog AI propose un service d'analyse technique de graphiques de trading utilisant des modèles d'intelligence artificielle. Le service génère des indicateurs techniques, identifie des patterns graphiques et fournit des niveaux de support et résistance à titre informatif.",
+        art3Title: "Article 3 - Avertissement",
+        art3: "Les analyses fournies par le service sont générées automatiquement et présentées à titre purement informatif et éducatif. Elles ne constituent en aucun cas des conseils en investissement, des recommandations d'achat ou de vente, ni des incitations à effectuer des transactions financières. L'utilisateur reconnaît que toute décision d'investissement est prise sous sa seule responsabilité.",
+        art4Title: "Article 4 - Responsabilité",
+        art4: "L'éditeur du service décline toute responsabilité quant aux décisions prises par l'utilisateur sur la base des analyses fournies. Le trading sur les marchés financiers comporte des risques de perte en capital. L'utilisateur est invité à consulter un conseiller financier agréé avant toute opération.",
+        art5Title: "Article 5 - Propriété Intellectuelle",
+        art5: "L'ensemble des éléments constituant le service (logos, graphismes, code source, algorithmes) sont protégés par le droit de la propriété intellectuelle. Toute reproduction, même partielle, est soumise à autorisation préalable.",
+        art6Title: "Article 6 - Modification des CGU",
+        art6: "L'éditeur se réserve le droit de modifier les présentes conditions à tout moment. Les utilisateurs seront informés de toute modification substantielle. La poursuite de l'utilisation du service après modification vaut acceptation des nouvelles conditions.",
+        art7Title: "Article 7 - Contact",
+        art7: "Pour toute question relative aux présentes conditions, vous pouvez nous contacter à l'adresse : contact@frogai.com",
+    },
+
+    // Confidentialite Page
+    privacy: {
+        back: "Retour",
+        title: "Politique de Confidentialité",
+        lastUpdate: "Dernière mise à jour : Janvier 2026",
+        backHome: "← Retour à l'accueil",
+        art1Title: "Article 1 - Collecte des Données",
+        art1: "Dans le cadre de l'utilisation du service Frog AI, nous collectons les données suivantes : les images de graphiques soumises pour analyse (traitées de manière éphémère), les données de navigation stockées localement dans votre navigateur, ainsi que les informations de paiement en cas de souscription à un abonnement.",
+        art2Title: "Article 2 - Traitement des Images",
+        art2: "Les images soumises au service sont transmises de manière sécurisée à notre fournisseur d'intelligence artificielle pour analyse. Elles ne sont pas stockées de manière permanente sur nos serveurs et sont supprimées après traitement.",
+        art3Title: "Article 3 - Finalité du Traitement",
+        art3: "Les données collectées sont utilisées aux fins suivantes : fourniture du service d'analyse, amélioration de la qualité des analyses, gestion des abonnements et communication avec les utilisateurs.",
+        art4Title: "Article 4 - Sous-traitants",
+        art4: "Pour assurer le fonctionnement du service, nous faisons appel aux prestataires suivants : Groq (traitement IA), Vercel (hébergement), Stripe (paiements). Ces prestataires sont soumis à des obligations contractuelles de confidentialité.",
+        art5Title: "Article 5 - Sécurité",
+        art5: "Nous mettons en œuvre les mesures techniques et organisationnelles appropriées pour protéger vos données : chiffrement des communications (HTTPS/TLS), absence de stockage permanent des images, sécurisation des clés d'accès.",
+        art6Title: "Article 6 - Vos Droits",
+        art6: "Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition concernant vos données personnelles. Pour exercer ces droits, contactez : privacy@frogai.com",
+        art7Title: "Article 7 - Cookies",
+        art7: "Le service utilise des cookies techniques strictement nécessaires à son fonctionnement. Aucun cookie de traçage publicitaire n'est déposé sans votre consentement préalable.",
+        art8Title: "Article 8 - Contact",
+        art8: "Pour toute question relative à la protection de vos données personnelles, vous pouvez contacter notre délégué à la protection des données à l'adresse : privacy@frogai.com",
+    },
+
+    // Success Page
+    success: {
+        welcomeTitle: "Bienvenue dans la",
+        welcomeHighlight: "famille",
+        lifetimeActive: "Ton accès Lifetime est maintenant actif !",
+        unlocked: "Ce que tu as débloqué",
+        feature1: "Analyses illimitées à vie",
+        feature2: "Prédiction IA avancée",
+        feature3: "Tous les futurs updates",
+        startAnalyzing: "Commencer à analyser",
+        confirmationSent: "Confirmation envoyée à",
+        loading: "Chargement...",
+    },
+} as const;
+
+export default fr;
+
+// Use a deep string-ified version so en.ts can have different values
+type DeepStringify<T> = {
+    [K in keyof T]: T[K] extends readonly string[]
+    ? readonly string[]
+    : T[K] extends string
+    ? string
+    : T[K] extends object
+    ? DeepStringify<T[K]>
+    : T[K];
+};
+
+export type Translations = DeepStringify<typeof fr>;
+

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Clock, TrendingUp, TrendingDown, Trash2, History, ChevronRight } from "lucide-react";
 import { AnalysisHistoryItem, getHistory, deleteAnalysis, clearHistory } from "@/lib/history";
+import { useTranslation } from "@/lib/i18n";
 
 interface HistoryDrawerProps {
     isOpen: boolean;
@@ -14,6 +15,7 @@ interface HistoryDrawerProps {
 export default function HistoryDrawer({ isOpen, onClose, onSelectAnalysis }: HistoryDrawerProps) {
     const [history, setHistory] = useState<AnalysisHistoryItem[]>([]);
     const [mounted, setMounted] = useState(false);
+    const { t, lang } = useTranslation();
 
     useEffect(() => {
         setMounted(true);
@@ -32,7 +34,7 @@ export default function HistoryDrawer({ isOpen, onClose, onSelectAnalysis }: His
     };
 
     const handleClearAll = () => {
-        if (confirm("Effacer tout l'historique ?")) {
+        if (confirm(t.history.clearConfirm)) {
             clearHistory();
             setHistory([]);
         }
@@ -43,10 +45,10 @@ export default function HistoryDrawer({ isOpen, onClose, onSelectAnalysis }: His
         const now = new Date();
         const diff = now.getTime() - date.getTime();
 
-        if (diff < 60000) return "À l'instant";
-        if (diff < 3600000) return `Il y a ${Math.floor(diff / 60000)}min`;
-        if (diff < 86400000) return `Il y a ${Math.floor(diff / 3600000)}h`;
-        if (diff < 604800000) return `Il y a ${Math.floor(diff / 86400000)}j`;
+        if (diff < 60000) return t.history.justNow;
+        if (diff < 3600000) return t.history.minutesAgo.replace("{n}", String(Math.floor(diff / 60000)));
+        if (diff < 86400000) return t.history.hoursAgo.replace("{n}", String(Math.floor(diff / 3600000)));
+        if (diff < 604800000) return t.history.daysAgo.replace("{n}", String(Math.floor(diff / 86400000)));
 
         return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
     };
@@ -85,8 +87,8 @@ export default function HistoryDrawer({ isOpen, onClose, onSelectAnalysis }: His
                                     <History className="w-5 h-5 text-frog-green" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-white">Historique</h2>
-                                    <p className="text-xs text-gray-500">{history.length} analyses</p>
+                                    <h2 className="text-lg font-bold text-white">{t.history.title}</h2>
+                                    <p className="text-xs text-gray-500">{history.length} {t.history.analyses}</p>
                                 </div>
                             </div>
                             <button
@@ -102,8 +104,8 @@ export default function HistoryDrawer({ isOpen, onClose, onSelectAnalysis }: His
                             {history.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-64 text-center">
                                     <History className="w-12 h-12 text-gray-600 mb-4" />
-                                    <p className="text-gray-400 font-medium">Aucune analyse</p>
-                                    <p className="text-gray-500 text-sm">Vos analyses apparaîtront ici</p>
+                                    <p className="text-gray-400 font-medium">{t.history.noAnalysis}</p>
+                                    <p className="text-gray-500 text-sm">{t.history.analysesWillAppear}</p>
                                 </div>
                             ) : (
                                 history.map((item) => (
@@ -187,7 +189,7 @@ export default function HistoryDrawer({ isOpen, onClose, onSelectAnalysis }: His
                                     onClick={handleClearAll}
                                     className="w-full py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
                                 >
-                                    Effacer tout l'historique
+                                    {t.history.clearAll}
                                 </button>
                             </div>
                         )}

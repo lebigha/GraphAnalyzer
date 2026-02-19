@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Outfit, JetBrains_Mono } from "next/font/google"; // New Fonts
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Analytics from "@/components/Analytics";
+import { LanguageProvider } from "@/lib/i18n";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -26,12 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${outfit.variable} ${jetbrainsMono.variable} antialiased bg-frog-darker text-white`}
       >
-        <Analytics />
-        {children}
+        <LanguageProvider>
+          <Analytics />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

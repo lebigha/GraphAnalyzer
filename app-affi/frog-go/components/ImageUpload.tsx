@@ -2,23 +2,25 @@
 
 import { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, ScanLine, Zap, TrendingUp, Shield, Clock } from "lucide-react";
+import { Upload, ScanLine, Zap, TrendingUp, Shield, Clock, Clipboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/lib/i18n";
 
 interface ImageUploadProps {
     onUpload: (imageData: string) => void;
     isAnalyzing: boolean;
 }
 
-// Feature cards data
-const features = [
-    { icon: Zap, title: "Analyse Instantanée", desc: "Résultats en < 5 sec" },
-    { icon: TrendingUp, title: "Pattern Recognition", desc: "50+ patterns détectés" },
-    { icon: Shield, title: "Gestion du Risque", desc: "R:R optimal calculé" },
-];
-
 export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps) {
     const [isMobile, setIsMobile] = useState(false);
+    const [showPasteHint, setShowPasteHint] = useState(false);
+    const { t } = useTranslation();
+
+    const features = [
+        { icon: Zap, title: t.upload.instantAnalysis, desc: t.upload.instantDesc },
+        { icon: TrendingUp, title: t.upload.patternRecognition, desc: t.upload.patternDesc },
+        { icon: Shield, title: t.upload.riskManagement, desc: t.upload.riskDesc },
+    ];
 
     useEffect(() => {
         const checkMobile = () => {
@@ -31,7 +33,6 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Fonction pour compresser l'image avant envoi
     const compressImage = useCallback((file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -39,11 +40,9 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
             const ctx = canvas.getContext('2d');
 
             img.onload = () => {
-                // Taille maximale pour éviter les limites Vercel (4.5MB)
                 const MAX_SIZE = 1200;
                 let { width, height } = img;
 
-                // Redimensionner si nécessaire
                 if (width > MAX_SIZE || height > MAX_SIZE) {
                     if (width > height) {
                         height = Math.round((height * MAX_SIZE) / width);
@@ -56,11 +55,8 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
 
                 canvas.width = width;
                 canvas.height = height;
-
-                // Dessiner l'image redimensionnée
                 ctx?.drawImage(img, 0, 0, width, height);
 
-                // Compresser en JPEG avec qualité 0.7
                 const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
                 console.log(`[ImageUpload] Compressed: ${(compressedDataUrl.length / 1024).toFixed(0)}KB`);
                 resolve(compressedDataUrl);
@@ -68,7 +64,6 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
 
             img.onerror = () => reject(new Error('Failed to load image'));
 
-            // Charger l'image depuis le fichier
             const reader = new FileReader();
             reader.onload = () => {
                 img.src = reader.result as string;
@@ -80,12 +75,10 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
 
     const processFile = useCallback(async (file: File) => {
         try {
-            // Compresser l'image avant de l'envoyer
             const compressedImage = await compressImage(file);
             onUpload(compressedImage);
         } catch (error) {
             console.error('[ImageUpload] Compression error:', error);
-            // Fallback: envoyer l'image originale
             const reader = new FileReader();
             reader.onload = () => {
                 onUpload(reader.result as string);
@@ -93,6 +86,33 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
             reader.readAsDataURL(file);
         }
     }, [onUpload, compressImage]);
+
+    // Handle Ctrl+V paste from clipboard
+    useEffect(() => {
+        const handlePaste = (e: ClipboardEvent) => {
+            if (isAnalyzing) return;
+
+            const items = e.clipboardData?.items;
+            if (!items) return;
+
+            for (const item of Array.from(items)) {
+                if (item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const file = item.getAsFile();
+                    if (file) {
+                        // Brief visual feedback
+                        setShowPasteHint(true);
+                        setTimeout(() => setShowPasteHint(false), 1500);
+                        processFile(file);
+                    }
+                    break;
+                }
+            }
+        };
+
+        window.addEventListener('paste', handlePaste);
+        return () => window.removeEventListener('paste', handlePaste);
+    }, [isAnalyzing, processFile]);
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
@@ -178,8 +198,8 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
                                             <ScanLine className="absolute inset-0 m-auto w-10 h-10 text-frog-green animate-pulse" />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-bold text-white mb-2">Analyse en cours...</h3>
-                                            <p className="text-sm text-gray-500 font-mono">Identification des patterns</p>
+                                            <h3 className="text-xl font-bold text-white mb-2">{t.upload.analyzing}</h3>
+                                            <p className="text-sm text-gray-500 font-mono">{t.upload.identifyingPatterns}</p>
                                         </div>
                                     </motion.div>
                                 ) : isDragActive ? (
@@ -197,7 +217,7 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
                                         >
                                             <Upload className="w-12 h-12 text-frog-green" />
                                         </motion.div>
-                                        <h3 className="text-2xl font-bold text-frog-green">Déposez-le ici ! 🐸</h3>
+                                        <h3 className="text-2xl font-bold text-frog-green">{t.upload.dropHere}</h3>
                                     </motion.div>
                                 ) : (
                                     <motion.div
@@ -228,14 +248,20 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
 
                                         <div className="space-y-3">
                                             <h3 className="text-2xl md:text-3xl font-black text-white">
-                                                Scannez votre <span className="text-frog-green">graphique</span>
+                                                {t.upload.scanTitle} <span className="text-frog-green">{t.upload.scanHighlight}</span>
                                             </h3>
                                             <p className="text-gray-400 max-w-md mx-auto text-sm md:text-base">
-                                                Glissez-déposez votre capture d'écran de trading, ou cliquez pour sélectionner.
+                                                {t.upload.scanDesc}
                                             </p>
                                             <p className="text-xs text-gray-600 font-mono">
                                                 PNG • JPG • WEBP
                                             </p>
+                                            {!isMobile && (
+                                                <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                                    <Clipboard className="w-3 h-3" />
+                                                    <span>{t.upload.pasteHint}</span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         <motion.button
@@ -244,7 +270,7 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
                                             whileTap={{ scale: 0.98 }}
                                         >
                                             <span className="relative z-10">
-                                                {isMobile ? "📸 Prendre une Photo" : "📂 Parcourir les Fichiers"}
+                                                {isMobile ? t.upload.takePhoto : t.upload.browseFiles}
                                             </span>
                                             {/* Shine effect */}
                                             <motion.div
@@ -265,7 +291,7 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {features.map((feature, i) => (
                     <motion.div
-                        key={feature.title}
+                        key={i}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * i }}
@@ -287,7 +313,7 @@ export default function ImageUpload({ onUpload, isAnalyzing }: ImageUploadProps)
             {/* SUPPORTED PLATFORMS */}
             <div className="text-center">
                 <p className="text-xs text-gray-600">
-                    Compatible avec <span className="text-gray-400">TradingView</span> • <span className="text-gray-400">MetaTrader</span> • <span className="text-gray-400">Binance</span> • <span className="text-gray-400">et plus</span>
+                    {t.upload.compatibleWith} <span className="text-gray-400">TradingView</span> • <span className="text-gray-400">MetaTrader</span> • <span className="text-gray-400">Binance</span> • <span className="text-gray-400">{t.upload.andMore}</span>
                 </p>
             </div>
         </div>
